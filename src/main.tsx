@@ -5,6 +5,8 @@ import App from './App.tsx';
 import MapView from './features/map/MapView.tsx';
 import TreeListScreen from './features/tree-list/TreeListScreen.tsx';
 import TreeDetailScreen from './features/tree-detail/TreeDetailScreen.tsx';
+import ProfileScreen from './features/profile/ProfileScreen.tsx';
+import DashboardScreen from './features/dashboard/DashboardScreen.tsx';
 import LoginScreen from './features/auth/LoginScreen.tsx';
 import { AuthProvider } from './auth/AuthProvider.tsx';
 import { SyncProvider } from './sync/SyncProvider.tsx';
@@ -32,6 +34,8 @@ const router = createBrowserRouter([
       { index: true, element: <MapView /> },
       { path: 'list', element: <TreeListScreen /> },
       { path: 'tree/:id', element: <TreeDetailScreen /> },
+      { path: 'profile', element: <ProfileScreen /> },
+      { path: 'dashboard', element: <DashboardScreen /> },
     ],
   },
 ]);
