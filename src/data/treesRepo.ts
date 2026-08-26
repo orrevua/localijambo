@@ -38,6 +38,25 @@ export async function mergePending(base: Tree[]): Promise<Tree[]> {
   return [...byClientId.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+export async function listMine(ownerId: string): Promise<Tree[]> {
+  try {
+    const { data, error } = await supabase
+      .from('trees')
+      .select('*')
+      .eq('owner_id', ownerId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    const server = (data as TreeRow[]).map(fromRow);
+    for (const tree of server) await idbPut('trees_cache', tree);
+    const merged = await mergePending(server);
+    return merged.filter((t) => t.ownerId === ownerId);
+  } catch {
+    const cached = await idbGetAll('trees_cache');
+    const merged = await mergePending(cached);
+    return merged.filter((t) => t.ownerId === ownerId);
+  }
+}
+
 export async function getById(id: string): Promise<Tree | null> {
   try {
     const { data, error } = await supabase
