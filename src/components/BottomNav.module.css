@@ -1,0 +1,32 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  display: flex;
+  border-top: 1px solid rgba(36, 16, 22, 0.1);
+  background: var(--color-cream);
+}
+
+.link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+}
+
+.active {
+  color: var(--color-crimson);
+  font-weight: 600;
+}
+
+.addButton {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}

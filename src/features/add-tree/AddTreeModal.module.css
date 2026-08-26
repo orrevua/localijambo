@@ -1,0 +1,45 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(36, 16, 22, 0.5);
+  padding: var(--space-md);
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 32rem;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--color-cream);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--color-ink);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (min-width: 40rem) {
+  .backdrop {
+    align-items: center;
+  }
+}
