@@ -30,11 +30,18 @@ interface UseMapOptions {
   centerOnUser?: boolean;
 }
 
+export interface UseMapResult {
+  map: maplibregl.Map | null;
+  /** True until the initial device-location lookup resolves (success or fail). */
+  locating: boolean;
+}
+
 export function useMap(
   container: RefObject<HTMLDivElement | null>,
   { centerOnUser = true }: UseMapOptions = {},
-) {
+): UseMapResult {
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+  const [locating, setLocating] = useState(centerOnUser && 'geolocation' in navigator);
 
   useEffect(() => {
     if (!container.current) return;
@@ -49,8 +56,8 @@ export function useMap(
 
     instance.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-    // trackUserLocation:false → the control recenters once per press (and once
-    // on the startup trigger below) instead of continuously following the user.
+    // trackUserLocation:false → the button recenters once per press instead of
+    // continuously following the user.
     const geolocate = new maplibregl.GeolocateControl({
       positionOptions: { enableHighAccuracy: true },
       trackUserLocation: false,
@@ -58,17 +65,27 @@ export function useMap(
     });
     instance.addControl(geolocate, 'top-right');
 
+    const canLocate = centerOnUser && 'geolocation' in navigator;
+
     instance.once('load', () => {
       setMap(instance);
-      // Auto-center on the device location once, exactly like tapping the
-      // "locate me" button. Must run after load or trigger() is a no-op.
-      if (centerOnUser) {
-        try {
-          geolocate.trigger();
-        } catch {
-          /* keep the fallback center */
-        }
+      if (!canLocate) {
+        setLocating(false);
+        return;
       }
+      // Center via the geolocation API directly — deterministic, unlike
+      // GeolocateControl.trigger() which can no-op if fired before it's ready.
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          instance.jumpTo({
+            center: [pos.coords.longitude, pos.coords.latitude],
+            zoom: LOCATED_ZOOM,
+          });
+          setLocating(false);
+        },
+        () => setLocating(false), // denied/timeout → keep the fallback center
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
+      );
     });
 
     return () => {
@@ -77,5 +94,5 @@ export function useMap(
     };
   }, [container, centerOnUser]);
 
-  return map;
+  return { map, locating };
 }

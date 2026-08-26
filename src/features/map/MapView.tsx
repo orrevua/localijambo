@@ -14,7 +14,7 @@ type Status = 'loading' | 'ready' | 'empty' | 'error';
 
 export default function MapView() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const map = useMap(containerRef);
+  const { map, locating } = useMap(containerRef);
   const { open } = useAddTreeModal();
   const { open: openDetail } = useTreeDetailModal();
   const [status, setStatus] = useState<Status>('loading');
@@ -48,6 +48,12 @@ export default function MapView() {
   return (
     <div className={styles.wrapper}>
       <div ref={containerRef} className={styles.map} />
+      {locating && (
+        <div className={styles.loading}>
+          <span className={styles.spinner} aria-hidden="true" />
+          <p>Finding your location…</p>
+        </div>
+      )}
       {status === 'empty' && (
         <div className={styles.overlay}>
           <StateMessage

@@ -12,7 +12,7 @@ interface Props {
 
 export default function ManualDrop({ onConfirm }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const map = useMap(containerRef);
+  const { map } = useMap(containerRef);
   const markerRef = useRef<maplibregl.Marker | null>(null);
   const [picked, setPicked] = useState<{ lon: number; lat: number } | null>(null);
 
