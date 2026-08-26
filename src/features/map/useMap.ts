@@ -44,6 +44,7 @@ export function useMap(
       style: OSM_STYLE,
       center: FALLBACK_CENTER,
       zoom: FALLBACK_ZOOM,
+      maxZoom: 19, // OSM has no tiles beyond z19; never request z20
     });
 
     instance.addControl(new maplibregl.NavigationControl(), 'top-right');
