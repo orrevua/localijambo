@@ -72,7 +72,7 @@ The client sends lon/lat. To construct `geography(Point,4326)`, use a Postgres *
 create or replace function public.upsert_tree(
   p_client_id uuid, p_lon double precision, p_lat double precision,
   p_species text, p_variety text, p_notes text,
-  p_fruiting fruiting_status, p_ripeness ripeness, p_is_shared boolean
+  p_fruiting_status fruiting_status, p_ripeness ripeness, p_is_shared boolean
 ) returns public.trees language plpgsql security invoker as $$
 declare rec public.trees;
 begin
@@ -80,7 +80,7 @@ begin
     fruiting_status, ripeness, is_shared)
   values (p_client_id, auth.uid(),
     ST_SetSRID(ST_MakePoint(p_lon, p_lat), 4326)::geography,
-    p_species, p_variety, p_notes, p_fruiting, p_ripeness, p_is_shared)
+    p_species, p_variety, p_notes, p_fruiting_status, p_ripeness, p_is_shared)
   on conflict (owner_id, client_id) do update set
     location = excluded.location, species = excluded.species, variety = excluded.variety,
     notes = excluded.notes, fruiting_status = excluded.fruiting_status,
