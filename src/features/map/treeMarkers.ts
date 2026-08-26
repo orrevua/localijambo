@@ -1,7 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import type { Tree } from '../../types/tree.ts';
-
-const CRIMSON = '#c21030';
+import { applyJamboPin } from './jamboPin.ts';
 
 export function renderTreeMarkers(
   map: maplibregl.Map,
@@ -11,19 +10,18 @@ export function renderTreeMarkers(
   return trees.map((tree) => {
     const el = document.createElement('button');
     el.type = 'button';
-    el.setAttribute('aria-label', tree.species);
-    el.style.width = '18px';
-    el.style.height = '18px';
-    el.style.border = '2px solid #fff';
-    el.style.borderRadius = '50%';
-    el.style.background = CRIMSON;
-    el.style.cursor = 'pointer';
+    el.setAttribute('aria-label', tree.variety ?? tree.species);
+    el.style.border = 'none';
+    el.style.background = 'none';
     el.style.padding = '0';
+    applyJamboPin(el);
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       onSelect(tree.id);
     });
 
-    return new maplibregl.Marker({ element: el }).setLngLat([tree.lon, tree.lat]).addTo(map);
+    return new maplibregl.Marker({ element: el, anchor: 'bottom' })
+      .setLngLat([tree.lon, tree.lat])
+      .addTo(map);
   });
 }

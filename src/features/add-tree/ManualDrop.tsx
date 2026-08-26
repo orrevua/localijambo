@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useMap } from '../map/useMap.ts';
 import { onMapLongPress } from '../map/mapLongPress.ts';
+import { applyJamboPin } from '../map/jamboPin.ts';
 import styles from './ManualDrop.module.css';
 
 interface Props {
@@ -23,7 +24,9 @@ export default function ManualDrop({ onConfirm }: Props) {
       if (markerRef.current) {
         markerRef.current.setLngLat(lngLat);
       } else {
-        const marker = new maplibregl.Marker({ color: '#c21030', draggable: true })
+        const el = document.createElement('div');
+        applyJamboPin(el);
+        const marker = new maplibregl.Marker({ element: el, anchor: 'bottom', draggable: true })
           .setLngLat(lngLat)
           .addTo(map);
         marker.on('dragend', () => {
