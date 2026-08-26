@@ -6,6 +6,8 @@ export interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signInWithOtp: (email: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
 }
 

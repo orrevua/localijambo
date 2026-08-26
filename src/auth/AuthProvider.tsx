@@ -38,14 +38,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+  }, []);
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    if (error) throw error;
+    // No session means Supabase requires email confirmation before sign-in.
+    return { needsConfirmation: !data.session };
+  }, []);
+
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   }, []);
 
   const value = useMemo(
-    () => ({ session, user: session?.user ?? null, loading, signInWithOtp, signOut }),
-    [session, loading, signInWithOtp, signOut],
+    () => ({
+      session,
+      user: session?.user ?? null,
+      loading,
+      signInWithOtp,
+      signInWithPassword,
+      signUp,
+      signOut,
+    }),
+    [session, loading, signInWithOtp, signInWithPassword, signUp, signOut],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;
