@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { listVisible } from '../../data/treesRepo.ts';
 import StateMessage from '../../components/StateMessage.tsx';
+import { useAddTreeModal } from '../add-tree/useAddTreeModal.ts';
 import type { Tree } from '../../types/tree.ts';
 import styles from './TreeListScreen.module.css';
 
 export default function TreeListScreen() {
+  const { open } = useAddTreeModal();
   const [trees, setTrees] = useState<Tree[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +36,11 @@ export default function TreeListScreen() {
       <StateMessage
         title="No trees yet"
         detail="Add the first jambo tree to see it here and on the map."
-        action={{ to: '/add', label: 'Add a tree' }}
-      />
+      >
+        <button type="button" className="btn" onClick={() => open()}>
+          Add a tree
+        </button>
+      </StateMessage>
     );
 
   return (

@@ -53,8 +53,11 @@ export default function MapView() {
           <StateMessage
             title="No trees on the map yet"
             detail="Drop the first jambo tree to start mapping."
-            action={{ to: '/add', label: 'Add a tree' }}
-          />
+          >
+            <button type="button" className="btn" onClick={() => open()}>
+              Add a tree
+            </button>
+          </StateMessage>
         </div>
       )}
       {status === 'error' && (
