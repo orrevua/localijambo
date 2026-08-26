@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { flush } from '../data/syncQueue.ts';
+import { flush, resetBackoff } from '../data/syncQueue.ts';
 import { pendingCount, SYNC_EVENT } from './syncEvents.ts';
 import { onBackgroundSyncMessage } from './backgroundSync.ts';
 import { SyncContext } from './SyncContext.ts';
@@ -8,6 +8,8 @@ import { SyncContext } from './SyncContext.ts';
 export function SyncProvider({ children }: { children: ReactNode }) {
   const [pending, setPending] = useState(0);
   const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [lastError, setLastError] = useState<string | null>(null);
   const running = useRef(false);
 
   const refreshPending = useCallback(() => {
@@ -16,23 +18,41 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       .catch(() => {});
   }, []);
 
-  const syncNow = useCallback(() => {
-    if (running.current || !navigator.onLine) return;
+  const runFlush = useCallback(async () => {
+    if (running.current) return;
+    if (!navigator.onLine) {
+      setLastError("You're offline — changes will sync when you reconnect.");
+      return;
+    }
     running.current = true;
-    flush()
-      .then((result) => {
-        setPending(result.pending);
-        if (result.synced > 0) setLastSyncedAt(Date.now());
-      })
-      .catch(() => {})
-      .finally(() => {
-        running.current = false;
-      });
+    setSyncing(true);
+    setLastError(null);
+    try {
+      const result = await flush();
+      setPending(result.pending);
+      if (result.synced > 0) setLastSyncedAt(Date.now());
+      if (result.failed > 0 && result.pending > 0) {
+        setLastError('Some changes could not sync yet. They will retry.');
+      }
+    } catch (err) {
+      setLastError(err instanceof Error ? err.message : 'Sync failed.');
+    } finally {
+      running.current = false;
+      setSyncing(false);
+    }
   }, []);
+
+  const syncNow = useCallback(() => {
+    void runFlush();
+  }, [runFlush]);
+
+  const forceSync = useCallback(() => {
+    void resetBackoff().then(runFlush);
+  }, [runFlush]);
 
   useEffect(() => {
     refreshPending();
-    if (navigator.onLine) syncNow();
+    if (navigator.onLine) queueMicrotask(syncNow);
 
     const onVisible = () => {
       if (document.visibilityState === 'visible') syncNow();
@@ -53,8 +73,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   }, [refreshPending, syncNow]);
 
   const value = useMemo(
-    () => ({ pending, lastSyncedAt, syncNow }),
-    [pending, lastSyncedAt, syncNow],
+    () => ({ pending, lastSyncedAt, syncing, lastError, syncNow, forceSync }),
+    [pending, lastSyncedAt, syncing, lastError, syncNow, forceSync],
   );
 
   return <SyncContext value={value}>{children}</SyncContext>;

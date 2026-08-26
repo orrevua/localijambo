@@ -35,6 +35,21 @@ export function backoffDelay(attempts: number): number {
   return Math.min(BACKOFF_BASE_MS * 2 ** attempts, BACKOFF_CAP_MS);
 }
 
+/** Clear backoff on all queued mutations so the next flush retries immediately. */
+export async function resetBackoff(): Promise<void> {
+  const mutations = await idbGetAll('pending_mutations');
+  const now = Date.now();
+  for (const mutation of mutations) {
+    await idbPut('pending_mutations', {
+      ...mutation,
+      attempts: 0,
+      nextAttemptAt: now,
+      lastError: undefined,
+    });
+  }
+  emitSyncChange();
+}
+
 async function pushMutation(mutation: PendingMutation): Promise<Tree | null> {
   if (mutation.op === 'delete') {
     const { error } = await supabase

@@ -1,35 +1,25 @@
-import { useEffect, useState } from 'react';
-import { pendingCount, SYNC_EVENT } from '../sync/syncEvents.ts';
+import { useSync } from '../sync/useSync.ts';
 import styles from './SyncStatusBadge.module.css';
 
 export default function SyncStatusBadge() {
-  const [count, setCount] = useState(0);
+  const { pending, syncing, lastError, forceSync } = useSync();
 
-  useEffect(() => {
-    let active = true;
-    const refresh = () => {
-      pendingCount()
-        .then((n) => {
-          if (active) setCount(n);
-        })
-        .catch(() => {});
-    };
-    refresh();
-    window.addEventListener(SYNC_EVENT, refresh);
-    window.addEventListener('online', refresh);
-    document.addEventListener('visibilitychange', refresh);
-    return () => {
-      active = false;
-      window.removeEventListener(SYNC_EVENT, refresh);
-      window.removeEventListener('online', refresh);
-      document.removeEventListener('visibilitychange', refresh);
-    };
-  }, []);
+  if (pending === 0 && !syncing) return null;
 
-  if (count === 0) return null;
+  const label = syncing ? 'Syncing…' : `${pending} pending · Sync now`;
+  const title = lastError ?? `${pending} change(s) waiting to sync — tap to sync now`;
+
   return (
-    <span className={styles.badge} title={`${count} change(s) waiting to sync`}>
-      {count} pending
-    </span>
+    <button
+      type="button"
+      className={`${styles.badge} ${lastError ? styles.error : ''}`}
+      onClick={forceSync}
+      disabled={syncing}
+      title={title}
+      aria-label={title}
+    >
+      {syncing && <span className={styles.spinner} aria-hidden="true" />}
+      {label}
+    </button>
   );
 }
