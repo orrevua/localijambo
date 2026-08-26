@@ -1,0 +1,252 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.title {
+  color: var(--color-crimson);
+  margin: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.empty {
+  margin: 0;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+/* Ready-now list */
+.readyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.readyRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid rgba(36, 16, 22, 0.12);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.readyName {
+  font-weight: 600;
+}
+
+.readyLabel {
+  opacity: 0.8;
+  font-size: 0.85rem;
+}
+
+.seasonBadge {
+  margin-left: auto;
+  padding: 2px var(--space-xs);
+  background: var(--color-crimson);
+  color: var(--color-cream);
+  border-radius: var(--radius-md);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+}
+
+.timelineHead,
+.timelineRow {
+  display: grid;
+  grid-template-columns: 6rem repeat(12, 1fr);
+  gap: 2px;
+  align-items: center;
+}
+
+.timelineName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: var(--space-xs);
+}
+
+.monthLabel {
+  text-align: center;
+  opacity: 0.6;
+}
+
+.cell {
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(36, 16, 22, 0.06);
+}
+
+.flowering {
+  background: var(--color-leaf);
+}
+
+.harvest {
+  background: #e0728a;
+}
+
+.peak {
+  background: var(--color-crimson);
+}
+
+.legend {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+  opacity: 0.8;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* Status table */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid rgba(36, 16, 22, 0.1);
+  white-space: nowrap;
+}
+
+.table th {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.stage {
+  text-transform: capitalize;
+}
+
+.stale {
+  opacity: 0.55;
+  font-style: italic;
+}
+
+/* Charts */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-lg);
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.barsH {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.barHRow {
+  display: grid;
+  grid-template-columns: 5rem 1fr 1.5rem;
+  gap: var(--space-xs);
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.barHLabel {
+  text-transform: capitalize;
+  opacity: 0.8;
+}
+
+.barHTrack {
+  height: 12px;
+  background: rgba(36, 16, 22, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.barHFill {
+  display: block;
+  height: 100%;
+  background: var(--color-crimson);
+}
+
+.barHValue {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.barsV {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 100px;
+}
+
+.barVCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 2px;
+}
+
+.barVFill {
+  width: 100%;
+  min-height: 2px;
+  background: var(--color-crimson);
+  border-radius: 3px 3px 0 0;
+}
+
+.barVLabel {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
