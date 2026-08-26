@@ -49,9 +49,11 @@ export function useMap(
 
     instance.addControl(new maplibregl.NavigationControl(), 'top-right');
 
+    // trackUserLocation:false → the control recenters once per press (and once
+    // on the startup trigger below) instead of continuously following the user.
     const geolocate = new maplibregl.GeolocateControl({
       positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: true,
+      trackUserLocation: false,
       fitBoundsOptions: { maxZoom: LOCATED_ZOOM },
     });
     instance.addControl(geolocate, 'top-right');
