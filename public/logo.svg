@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Localijambo">
+  <defs>
+    <linearGradient id="jambo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C21030"/>
+      <stop offset="1" stop-color="#B0165A"/>
+    </linearGradient>
+  </defs>
+  <!-- leaf angled off the top stem -->
+  <path d="M33 15 C41 5 53 5 58 9 C53 19 42 21 35 16 Z" fill="#2E7D32"/>
+  <path d="M35 16 C43 13 50 12 56 10" fill="none" stroke="#1B5E20" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- stem -->
+  <path d="M31 14 C31 19 31 22 32 25" fill="none" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- pear-shaped jambo fruit, slightly asymmetric -->
+  <path d="M32 23
+           C23 23 18 30 18 38
+           C18 49 25 56 32 56
+           C40 56 45 49 44 38
+           C43 30 40 23 32 23 Z" fill="url(#jambo)"/>
+  <!-- 4-point green crown / calyx peeking from the bottom tip -->
+  <path d="M30 53 L25.5 61 L31.5 54.5 Z" fill="#2E7D32"/>
+  <path d="M30.5 54 L32 62 L33.5 54 Z" fill="#1B5E20"/>
+  <path d="M34 53 L38.5 61 L32.5 54.5 Z" fill="#2E7D32"/>
+</svg>

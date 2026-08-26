@@ -1,0 +1,50 @@
+.capture {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.readout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.badge {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-weight: 600;
+}
+
+.green {
+  background: var(--color-leaf);
+}
+
+.amber {
+  background: #c77700;
+}
+
+.red {
+  background: var(--color-crimson);
+}
+
+.coords {
+  font-variant-numeric: tabular-nums;
+}
+
+.waiting {
+  margin: 0;
+  color: var(--color-ink);
+}
+
+.warn {
+  margin: 0;
+  color: var(--color-crimson);
+  font-size: 0.9rem;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-crimson);
+}

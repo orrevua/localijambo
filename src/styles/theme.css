@@ -1,0 +1,18 @@
+:root {
+  --color-crimson: #c21030;
+  --color-magenta: #b0165a;
+  --color-leaf: #2e7d32;
+  --color-leaf-dark: #1b5e20;
+  --color-cream: #fff7f2;
+  --color-ink: #241016;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+
+  --radius-md: 0.5rem;
+
+  --nav-height: 3.5rem;
+  --header-height: 3rem;
+}

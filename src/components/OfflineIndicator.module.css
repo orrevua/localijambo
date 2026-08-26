@@ -1,0 +1,7 @@
+.bar {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-size: 0.85rem;
+  text-align: center;
+}

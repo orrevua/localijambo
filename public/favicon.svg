@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Localijambo">
+  <defs>
+    <linearGradient id="jambo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C21030"/>
+      <stop offset="1" stop-color="#B0165A"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#FFF7F2"/>
+  <path d="M33 16 C40 8 50 8 54 11 C50 19 41 21 35 17 Z" fill="#2E7D32"/>
+  <path d="M31 15 C31 20 31 23 32 26" fill="none" stroke="#1B5E20" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M32 25
+           C24 25 19 31 19 38
+           C19 48 26 55 32 55
+           C39 55 44 48 43 38
+           C42 31 39 25 32 25 Z" fill="url(#jambo)"/>
+  <path d="M30 52 L26 60 L31.5 53.5 Z" fill="#2E7D32"/>
+  <path d="M30.5 53 L32 61 L33.5 53 Z" fill="#1B5E20"/>
+  <path d="M34 52 L38 60 L32.5 53.5 Z" fill="#2E7D32"/>
+</svg>

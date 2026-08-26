@@ -1,0 +1,24 @@
+.wrapper {
+  position: fixed;
+  inset: 0;
+  top: var(--header-height);
+  bottom: var(--nav-height);
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+}
+
+.overlay {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-lg);
+  transform: translateX(-50%);
+  width: min(90%, 22rem);
+  background: var(--color-cream);
+  border: 1px solid rgba(36, 16, 22, 0.12);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(36, 16, 22, 0.15);
+  z-index: 5;
+}

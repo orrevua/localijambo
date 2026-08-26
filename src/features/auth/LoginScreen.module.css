@@ -1,0 +1,38 @@
+.screen {
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.title {
+  color: var(--color-crimson);
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.input {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid rgba(36, 16, 22, 0.2);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.error {
+  color: var(--color-crimson);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.sent {
+  color: var(--color-leaf-dark);
+  margin: 0;
+}
