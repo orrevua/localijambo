@@ -15,6 +15,10 @@ const OSM_STYLE: StyleSpecification = {
       type: 'raster',
       tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
       tileSize: 256,
+      // OSM serves tiles only up to z19; cap here so MapLibre overzooms
+      // (upscales z19) instead of requesting nonexistent z20 tiles (which
+      // return a 400 error page with no CORS header).
+      maxzoom: 19,
       attribution: '© OpenStreetMap contributors',
     },
   },
