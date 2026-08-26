@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useMap } from './useMap.ts';
@@ -7,6 +6,7 @@ import { onMapLongPress } from './mapLongPress.ts';
 import { renderTreeMarkers } from './treeMarkers.ts';
 import { listVisible } from '../../data/treesRepo.ts';
 import { useAddTreeModal } from '../add-tree/useAddTreeModal.ts';
+import { useTreeDetailModal } from '../tree-detail/useTreeDetailModal.ts';
 import StateMessage from '../../components/StateMessage.tsx';
 import styles from './MapView.module.css';
 
@@ -15,8 +15,8 @@ type Status = 'loading' | 'ready' | 'empty' | 'error';
 export default function MapView() {
   const containerRef = useRef<HTMLDivElement>(null);
   const map = useMap(containerRef);
-  const navigate = useNavigate();
   const { open } = useAddTreeModal();
+  const { open: openDetail } = useTreeDetailModal();
   const [status, setStatus] = useState<Status>('loading');
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function MapView() {
     listVisible()
       .then((trees) => {
         if (!active) return;
-        markers = renderTreeMarkers(map, trees, (id) => navigate(`/tree/${id}`));
+        markers = renderTreeMarkers(map, trees, (id) => openDetail(id));
         setStatus(trees.length === 0 ? 'empty' : 'ready');
       })
       .catch(() => {
@@ -43,7 +43,7 @@ export default function MapView() {
       markers.forEach((m) => m.remove());
       detach();
     };
-  }, [map, navigate, open]);
+  }, [map, open, openDetail]);
 
   return (
     <div className={styles.wrapper}>
