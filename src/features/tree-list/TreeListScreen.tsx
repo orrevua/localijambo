@@ -10,18 +10,16 @@ import { useTreeDetailModal } from '../tree-detail/useTreeDetailModal.ts';
 import { jamboTone, treeName } from '../../lib/jamboStatus.ts';
 import { jamboPinSvg } from '../map/jamboPin.ts';
 import type { Tree } from '../../types/tree.ts';
+import { useI18n } from '../../i18n/useI18n.ts';
 import styles from './TreeListScreen.module.css';
 
 type Scope = 'all' | 'mine' | 'ripe';
 
-const SCOPES: { value: Scope; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'ripe', label: 'Ripe now' },
-  { value: 'mine', label: 'Mine' },
-];
+const SCOPES: Scope[] = ['all', 'ripe', 'mine'];
 
 export default function TreeListScreen() {
   const { user } = useAuth();
+  const { t, locale } = useI18n();
   const { open } = useAddTreeModal();
   const { open: openDetail } = useTreeDetailModal();
   const [trees, setTrees] = useState<Tree[] | null>(null);
@@ -40,7 +38,7 @@ export default function TreeListScreen() {
         })
         .catch((err) => {
           if (!active) return;
-          setError(err instanceof Error ? err.message : 'Could not load trees.');
+          setError(err instanceof Error ? err.message : String(err));
         });
     };
     load();
@@ -62,16 +60,13 @@ export default function TreeListScreen() {
     });
   }, [trees, query, scope, user?.id]);
 
-  if (error) return <StateMessage tone="error" title="Could not load jambos" detail={error} />;
-  if (!trees) return <StateMessage title="Loading jambos…" />;
+  if (error) return <StateMessage tone="error" title={t.list.loadError} detail={error} />;
+  if (!trees) return <StateMessage title={t.list.loading} />;
   if (trees.length === 0)
     return (
-      <StateMessage
-        title="No jambos yet"
-        detail="Add the first jambo tree to see it here and on the map."
-      >
+      <StateMessage title={t.list.empty} detail={t.list.emptyDetail}>
         <button type="button" className="btn" onClick={() => open()}>
-          <Icon name="plus" size={20} /> Add jambo
+          <Icon name="plus" size={20} /> {t.nav.add}
         </button>
       </StateMessage>
     );
@@ -79,7 +74,7 @@ export default function TreeListScreen() {
   return (
     <div className={styles.screen}>
       <header className={styles.head}>
-        <h2 className={styles.title}>Jambos</h2>
+        <h2 className={styles.title}>{t.list.title}</h2>
         <span className={styles.count}>{trees.length}</span>
       </header>
 
@@ -87,29 +82,29 @@ export default function TreeListScreen() {
         <Icon name="search" size={18} />
         <input
           type="search"
-          placeholder="Search by name or notes"
+          placeholder={t.list.search}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
       </label>
 
-      <div className={styles.scopes} role="radiogroup" aria-label="Filter">
+      <div className={styles.scopes} role="radiogroup" aria-label={t.list.filter}>
         {SCOPES.map((s) => (
           <button
-            key={s.value}
+            key={s}
             type="button"
             role="radio"
-            aria-checked={scope === s.value}
-            className={`${styles.scope} ${scope === s.value ? styles.scopeOn : ''}`}
-            onClick={() => setScope(s.value)}
+            aria-checked={scope === s}
+            className={`${styles.scope} ${scope === s ? styles.scopeOn : ''}`}
+            onClick={() => setScope(s)}
           >
-            {s.label}
+            {t.list[s]}
           </button>
         ))}
       </div>
 
       {shown.length === 0 ? (
-        <p className={styles.none}>Nothing matches.</p>
+        <p className={styles.none}>{t.list.none}</p>
       ) : (
         <ul className={styles.list}>
           {shown.map((tree) => (
@@ -123,8 +118,8 @@ export default function TreeListScreen() {
                 <span className={styles.text}>
                   <span className={styles.name}>{treeName(tree)}</span>
                   <span className={styles.meta}>
-                    {new Date(tree.createdAt).toLocaleDateString()}
-                    {tree.ownerId === user?.id ? ' · yours' : ''}
+                    {new Date(tree.createdAt).toLocaleDateString(locale)}
+                    {tree.ownerId === user?.id ? ` · ${t.list.yours}` : ''}
                     {tree.notes ? ` · ${tree.notes}` : ''}
                   </span>
                 </span>

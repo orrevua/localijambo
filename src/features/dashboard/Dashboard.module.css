@@ -41,16 +41,13 @@
 .readyRow {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  text-decoration: none;
+  background: var(--surface);
   color: var(--color-ink);
-}
-
-.readyName {
-  font-weight: 600;
 }
 
 .readyLabel {
@@ -80,16 +77,18 @@
 .timelineHead,
 .timelineRow {
   display: grid;
-  grid-template-columns: 6rem repeat(12, 1fr);
+  grid-template-columns: 7.5rem repeat(12, 1fr);
   gap: 2px;
   align-items: center;
 }
 
 .timelineName {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: var(--space-xs);
+  font-size: 0.8rem;
 }
 
 .monthLabel {
@@ -159,10 +158,6 @@
   opacity: 0.7;
 }
 
-.stage {
-  text-transform: capitalize;
-}
-
 .stale {
   opacity: 0.55;
   font-style: italic;
@@ -202,7 +197,6 @@
 }
 
 .barHLabel {
-  text-transform: capitalize;
   opacity: 0.8;
 }
 

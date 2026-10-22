@@ -1,7 +1,7 @@
 import type { TimelineBand } from '../../lib/treeStats.ts';
+import { useI18n } from '../../i18n/useI18n.ts';
+import TreeLabel from './TreeLabel.tsx';
 import styles from './Dashboard.module.css';
-
-const MONTH_LABELS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 function cellClass(band: TimelineBand, month: number): string {
@@ -13,11 +13,12 @@ function cellClass(band: TimelineBand, month: number): string {
 }
 
 export default function SeasonTimeline({ bands }: { bands: TimelineBand[] }) {
+  const { t } = useI18n();
   return (
     <div className={styles.timeline}>
       <div className={styles.timelineHead}>
         <span className={styles.timelineName} />
-        {MONTH_LABELS.map((m, i) => (
+        {t.dashboard.months.map((m, i) => (
           <span key={i} className={styles.monthLabel}>
             {m}
           </span>
@@ -25,7 +26,9 @@ export default function SeasonTimeline({ bands }: { bands: TimelineBand[] }) {
       </div>
       {bands.map((band) => (
         <div className={styles.timelineRow} key={band.tree.id}>
-          <span className={styles.timelineName}>{band.tree.variety ?? band.tree.species}</span>
+          <span className={styles.timelineName}>
+            <TreeLabel tree={band.tree} compact />
+          </span>
           {MONTHS.map((month) => (
             <span key={month} className={cellClass(band, month)} />
           ))}
@@ -33,13 +36,13 @@ export default function SeasonTimeline({ bands }: { bands: TimelineBand[] }) {
       ))}
       <div className={styles.legend}>
         <span className={styles.legendItem}>
-          <span className={`${styles.swatch} ${styles.flowering}`} /> flowering
+          <span className={`${styles.swatch} ${styles.flowering}`} /> {t.dashboard.legendFlowering}
         </span>
         <span className={styles.legendItem}>
-          <span className={`${styles.swatch} ${styles.harvest}`} /> harvest
+          <span className={`${styles.swatch} ${styles.harvest}`} /> {t.dashboard.legendHarvest}
         </span>
         <span className={styles.legendItem}>
-          <span className={`${styles.swatch} ${styles.peak}`} /> peak
+          <span className={`${styles.swatch} ${styles.peak}`} /> {t.dashboard.legendPeak}
         </span>
       </div>
     </div>

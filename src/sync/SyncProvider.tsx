@@ -5,6 +5,7 @@ import { pendingCount, SYNC_EVENT } from './syncEvents.ts';
 import { onBackgroundSyncMessage } from './backgroundSync.ts';
 import { SyncContext } from './SyncContext.ts';
 import { useI18n } from '../i18n/useI18n.ts';
+import { useAuth } from '../auth/useAuth.ts';
 
 export function SyncProvider({ children }: { children: ReactNode }) {
   const [pending, setPending] = useState(0);
@@ -13,6 +14,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [lastError, setLastError] = useState<string | null>(null);
   const running = useRef(false);
   const { t } = useI18n();
+  const { user } = useAuth();
+  const signedIn = !!user;
 
   const refreshPending = useCallback(() => {
     pendingCount()
@@ -22,6 +25,8 @@ export function SyncProvider({ children }: { children: ReactNode }) {
 
   const runFlush = useCallback(async () => {
     if (running.current) return;
+    // Queued changes belong to a signed-in user; anonymous visitors only read.
+    if (!signedIn) return;
     if (!navigator.onLine) {
       setLastError(t.sync.offlineError);
       return;
@@ -42,7 +47,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       running.current = false;
       setSyncing(false);
     }
-  }, [t]);
+  }, [t, signedIn]);
 
   const syncNow = useCallback(() => {
     void runFlush();

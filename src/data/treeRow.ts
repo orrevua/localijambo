@@ -4,6 +4,8 @@ export interface TreeRow {
   id: string;
   client_id: string;
   owner_id: string;
+  /** Only present on trees_view rows. */
+  owner_name?: string | null;
   lon: number;
   lat: number;
   species: string;
@@ -22,6 +24,7 @@ export function fromRow(row: TreeRow): Tree {
     id: row.id,
     clientId: row.client_id,
     ownerId: row.owner_id,
+    ownerName: row.owner_name ?? undefined,
     lon: row.lon,
     lat: row.lat,
     species: row.species,

@@ -50,15 +50,21 @@ describe('daysBetween', () => {
   });
 
   it('counts whole days forward', () => {
-    expect(daysBetween({ year: 2026, month: 8, day: 1 }, { year: 2026, month: 8, day: 31 })).toBe(30);
+    expect(daysBetween({ year: 2026, month: 8, day: 1 }, { year: 2026, month: 8, day: 31 })).toBe(
+      30,
+    );
   });
 
   it('handles cross-year diffs', () => {
-    expect(daysBetween({ year: 2025, month: 12, day: 31 }, { year: 2026, month: 1, day: 1 })).toBe(1);
+    expect(daysBetween({ year: 2025, month: 12, day: 31 }, { year: 2026, month: 1, day: 1 })).toBe(
+      1,
+    );
   });
 
   it('is negative when b precedes a', () => {
-    expect(daysBetween({ year: 2026, month: 8, day: 10 }, { year: 2026, month: 8, day: 1 })).toBe(-9);
+    expect(daysBetween({ year: 2026, month: 8, day: 10 }, { year: 2026, month: 8, day: 1 })).toBe(
+      -9,
+    );
   });
 });
 
@@ -268,5 +274,38 @@ describe('predictFruiting — calendar-fallback branch', () => {
     // Feb is in both flowering and harvest windows; harvest takes precedence.
     expect(p.stage).toBe('harvest');
     expect(p.inSeason).toBe(true);
+  });
+});
+
+describe('humanizeDays — two-week threshold', () => {
+  it('keeps days below two weeks', () => {
+    expect(humanizeDays(10)).toBe('~10 days');
+    expect(humanizeDays(13)).toBe('~13 days');
+  });
+
+  it('switches to weeks at 14 days', () => {
+    expect(humanizeDays(14)).toBe('~2 weeks');
+  });
+});
+
+describe('predictFruiting — observed ripe outside the calendar', () => {
+  it('labels harvest now even when October is out of season', () => {
+    const now = new Date(2026, 9, 15, 12);
+    const p = predictFruiting(makeTree('fruiting', 'ripe', isoLocal(2026, 10, 14)), now);
+    expect(p.stage).toBe('harvest');
+    expect(p.label).toBe('Ripe fruit — harvest now');
+    expect(p.inSeason).toBe(false);
+    expect(p.confidence).toBe('observed');
+    expect(p.daysToRipe).toBe(0);
+  });
+});
+
+describe('predictFruiting — daysToRipe mean', () => {
+  it('flowering observed today -> mean 70, range 60–80', () => {
+    const now = new Date(2026, 8, 10, 12);
+    const p = predictFruiting(makeTree('flowering', 'unknown', isoLocal(2026, 9, 10)), now);
+    expect(p.daysToRipe).toBe(70);
+    expect(p.daysToRipeMin).toBe(60);
+    expect(p.daysToRipeMax).toBe(80);
   });
 });

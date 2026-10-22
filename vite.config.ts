@@ -17,8 +17,9 @@ export default defineConfig({
         id: '/',
         name: 'Localijambo',
         short_name: 'Localijambo',
-        description: 'Find, map and share jambo vermelho trees near you — works offline.',
-        lang: 'en',
+        description:
+          'Encontre, mapeie e compartilhe pés de jambo vermelho perto de você — funciona offline.',
+        lang: 'pt-BR',
         categories: ['food', 'lifestyle', 'navigation'],
         theme_color: '#FFF8F6',
         background_color: '#FFF8F6',
@@ -28,8 +29,8 @@ export default defineConfig({
         start_url: '/',
         scope: '/',
         shortcuts: [
-          { name: 'Jambo list', short_name: 'List', url: '/list' },
-          { name: 'Dashboard', short_name: 'Dashboard', url: '/dashboard' },
+          { name: 'Lista de jambos', short_name: 'Lista', url: '/list' },
+          { name: 'Painel', short_name: 'Painel', url: '/dashboard' },
         ],
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

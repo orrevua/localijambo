@@ -116,4 +116,21 @@ describe('buildTreeStats', () => {
     expect(vm.entries[0].lastObservedDays).toBeNull();
     expect(vm.entries[0].stale).toBe(true);
   });
+
+  it('counts an observed ripe tree as in season outside the calendar window', () => {
+    // October is outside HARVEST_WINDOW (Dec–May).
+    const october = new Date('2026-10-15T12:00:00');
+    const ripe = makeTree({
+      fruitingStatus: 'fruiting',
+      ripeness: 'ripe',
+      updatedAt: '2026-10-14T12:00:00.000Z',
+    });
+    const resting = makeTree({ fruitingStatus: 'none', updatedAt: '2026-10-14T12:00:00.000Z' });
+
+    const vm = buildTreeStats([ripe, resting], october);
+
+    expect(vm.inSeasonNowCount).toBe(1);
+    expect(vm.entries.find((e) => e.tree.id === ripe.id)!.inSeasonNow).toBe(true);
+    expect(vm.entries.find((e) => e.tree.id === resting.id)!.inSeasonNow).toBe(false);
+  });
 });

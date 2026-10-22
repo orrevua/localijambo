@@ -167,7 +167,9 @@ export async function updateStatus(
     .select()
     .single();
   if (error) throw error;
-  const tree = fromRow(data as TreeRow);
+  const cached = await findCached(id);
+  // The trees table has no owner_name; keep the one trees_view gave us.
+  const tree = { ...fromRow(data as TreeRow), ownerName: cached?.ownerName };
   await idbPut('trees_cache', tree);
   emitTreesChanged();
   return tree;

@@ -5,6 +5,8 @@ export interface Tree {
   id: string;
   clientId: string;
   ownerId: string;
+  /** Public display name of whoever added it (from trees_view). */
+  ownerName?: string;
   lon: number;
   lat: number;
   species: string;

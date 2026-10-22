@@ -30,18 +30,29 @@ const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: (
-      <RequireAuth>
-        <App />
-      </RequireAuth>
-    ),
+    // The map, list and tree details are public; only adding needs an account.
+    element: <App />,
     errorElement: <RouteError />,
     children: [
       { index: true, element: <MapView /> },
       { path: 'list', element: <TreeListScreen /> },
       { path: 'tree/:id', element: <TreeDetailScreen /> },
-      { path: 'profile', element: <ProfileScreen /> },
-      { path: 'dashboard', element: <DashboardScreen /> },
+      {
+        path: 'profile',
+        element: (
+          <RequireAuth>
+            <ProfileScreen />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'dashboard',
+        element: (
+          <RequireAuth>
+            <DashboardScreen />
+          </RequireAuth>
+        ),
+      },
       {
         path: '*',
         element: <NotFound />,
