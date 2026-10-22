@@ -12,12 +12,8 @@ import type { Tree } from '../../types/tree.ts';
 import type { MapFocusState } from '../map/MapView.tsx';
 import { useI18n } from '../../i18n/useI18n.ts';
 import ChoiceChips from '../../components/ChoiceChips.tsx';
-import {
-  forecastLabel,
-  fruitingOptions,
-  ripenessFor,
-  ripenessOptions,
-} from '../../i18n/format.ts';
+import { forecastLabel, fruitingOptions, ripenessFor, ripenessOptions } from '../../i18n/format.ts';
+import { ownerLabel } from './ownerLabel.ts';
 import styles from './TreeDetailScreen.module.css';
 
 interface Props {
@@ -79,13 +75,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
   if (!loaded && error)
     return <StateMessage tone="error" title={t.detail.loadError} detail={error} />;
   if (!loaded) return <StateMessage title={t.detail.loading} />;
-  if (!tree)
-    return (
-      <StateMessage
-        title={t.detail.notFound}
-        detail={t.detail.notFoundDetail}
-      />
-    );
+  if (!tree) return <StateMessage title={t.detail.notFound} detail={t.detail.notFoundDetail} />;
 
   const isOwner = user?.id === tree.ownerId;
   const forecast = predictFruiting(tree, new Date());
@@ -146,6 +136,8 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
         <StatusChip tree={tree} />
       </header>
 
+      <p className={styles.by}>{t.detail.addedBy(ownerLabel(t, tree, user?.id))}</p>
+
       {photoUrl && <img className={styles.photo} src={photoUrl} alt={treeName(tree)} />}
 
       <div className={`${styles.forecast} ${forecast.inSeason ? styles.inSeason : ''}`}>
@@ -153,10 +145,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
         <span>
           {forecastLabel(t, forecast)}
           {forecast.confidence === 'calendar' && (
-            <span
-              className={styles.estimate}
-              title={t.detail.estimatedTitle}
-            >
+            <span className={styles.estimate} title={t.detail.estimatedTitle}>
               {' '}
               · {t.detail.estimated}
             </span>
@@ -224,10 +213,12 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
           <dt>{t.detail.added}</dt>
           <dd>{new Date(tree.createdAt).toLocaleDateString(locale)}</dd>
         </div>
-        <div>
-          <dt>{t.detail.visibility}</dt>
-          <dd>{tree.isShared ? t.detail.shared : t.detail.onlyYou}</dd>
-        </div>
+        {isOwner && (
+          <div>
+            <dt>{t.detail.visibility}</dt>
+            <dd>{tree.isShared ? t.detail.shared : t.detail.onlyYou}</dd>
+          </div>
+        )}
         {tree.notes && (
           <div className={styles.wide}>
             <dt>{t.detail.notes}</dt>

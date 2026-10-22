@@ -17,6 +17,12 @@
   font-size: 1.35rem;
 }
 
+.by {
+  margin: calc(-1 * var(--space-sm)) 0 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
 .photo {
   width: 100%;
   max-height: 16rem;

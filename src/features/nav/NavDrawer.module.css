@@ -127,3 +127,13 @@
   font-size: 0.9rem;
   font-weight: 600;
 }
+
+.signin {
+  margin-top: auto;
+  text-decoration: none;
+}
+
+.install + .signin,
+.iosHint + .signin {
+  margin-top: 0;
+}

@@ -88,3 +88,8 @@
   color: var(--mint-600);
   margin: 0;
 }
+
+.browse {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}

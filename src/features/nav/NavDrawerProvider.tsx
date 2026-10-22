@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
 import { useAuth } from '../../auth/useAuth.ts';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt.ts';
 import Icon from '../../components/Icon.tsx';
@@ -11,10 +11,10 @@ import type { NavDrawerValue } from './NavDrawerContext.ts';
 import styles from './NavDrawer.module.css';
 
 const LINKS = [
-  { to: '/', key: 'map', end: true },
-  { to: '/list', key: 'jambos', end: false },
-  { to: '/dashboard', key: 'dashboard', end: false },
-  { to: '/profile', key: 'profile', end: false },
+  { to: '/', key: 'map', end: true, auth: false },
+  { to: '/list', key: 'jambos', end: false, auth: false },
+  { to: '/dashboard', key: 'dashboard', end: false, auth: true },
+  { to: '/profile', key: 'profile', end: false, auth: true },
 ] as const;
 
 export function NavDrawerProvider({ children }: { children: ReactNode }) {
@@ -62,7 +62,7 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
               </div>
             </div>
             <nav className={styles.links}>
-              {LINKS.map(({ to, key, end }) => (
+              {LINKS.filter((l) => user || !l.auth).map(({ to, key, end }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -91,20 +91,24 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
               </button>
             )}
             {install.mode === 'ios' && (
-              <p className={styles.iosHint}>
-                {t.nav.iosInstall(t.nav.iosShare, t.nav.iosAdd)}
-              </p>
+              <p className={styles.iosHint}>{t.nav.iosInstall(t.nav.iosShare, t.nav.iosAdd)}</p>
             )}
-            <button
-              type="button"
-              className={styles.signout}
-              onClick={() => {
-                close();
-                void signOut();
-              }}
-            >
-              {t.nav.signOut}
-            </button>
+            {user ? (
+              <button
+                type="button"
+                className={styles.signout}
+                onClick={() => {
+                  close();
+                  void signOut();
+                }}
+              >
+                {t.nav.signOut}
+              </button>
+            ) : (
+              <Link to="/login" onClick={close} className={`btn ${styles.signin}`}>
+                {t.nav.signIn}
+              </Link>
+            )}
           </aside>
         </div>
       )}

@@ -6,12 +6,15 @@ import TreeForm from './TreeForm.tsx';
 import { AddTreeModalContext } from './AddTreeModalContext.ts';
 import type { AddTreeCoords, AddTreeModalValue } from './AddTreeModalContext.ts';
 import { useI18n } from '../../i18n/useI18n.ts';
+import { useAuth } from '../../auth/useAuth.ts';
+import type { LoginState } from '../../auth/RequireAuth.tsx';
 import styles from './AddTreeSheet.module.css';
 
 export function AddTreeModalProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { t } = useI18n();
+  const { user } = useAuth();
   const [coords, setCoords] = useState<AddTreeCoords | null>(null);
   const [placing, setPlacing] = useState(false);
 
@@ -27,6 +30,12 @@ export function AddTreeModalProvider({ children }: { children: ReactNode }) {
 
   const open = useCallback(
     (c?: AddTreeCoords) => {
+      // Browsing is public; adding a jambo needs an account.
+      if (!user) {
+        const state: LoginState = { from: pathname };
+        navigate('/login', { state });
+        return;
+      }
       if (c) {
         setPlacing(false);
         setCoords(c);
@@ -35,7 +44,7 @@ export function AddTreeModalProvider({ children }: { children: ReactNode }) {
       setPlacing(true);
       if (pathname !== '/') navigate('/');
     },
-    [navigate, pathname],
+    [navigate, pathname, user],
   );
 
   const value = useMemo<AddTreeModalValue>(

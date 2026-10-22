@@ -12,6 +12,7 @@ const en = {
   common: {
     close: 'Close',
     backToMap: 'Back to the map',
+    browseMap: 'Browse the map without signing in',
     notFound: 'Page not found',
     notFoundDetail: "That page doesn't exist. It may have moved or the link was mistyped.",
     somethingWrong: 'Something went wrong',
@@ -28,6 +29,7 @@ const en = {
     openMenu: 'Open menu',
     menu: 'Menu',
     signOut: 'Sign out',
+    signIn: 'Sign in',
     install: 'Install app',
     iosInstall: (share: string, add: string) => `Install: tap ${share}, then ${add}.`,
     iosShare: 'Share',
@@ -62,6 +64,7 @@ const en = {
     noMatch: 'No jambos match this filter',
     count: (n: number) => `${n} jambo${n === 1 ? '' : 's'} on the map`,
     away: (d: string) => `${d} away`,
+    by: (name: string) => `by ${name}`,
   },
   form: {
     sheetLabel: 'Add a jambo',
@@ -120,6 +123,9 @@ const en = {
     saveStatus: 'Save',
     statusError: 'Could not update the status.',
     observed: 'Last checked',
+    addedBy: (name: string) => `Added by ${name}`,
+    you: 'you',
+    someone: 'someone',
   },
   list: {
     title: 'Jambos',
@@ -241,6 +247,7 @@ const pt: Messages = {
   common: {
     close: 'Fechar',
     backToMap: 'Voltar ao mapa',
+    browseMap: 'Ver o mapa sem entrar',
     notFound: 'Página não encontrada',
     notFoundDetail: 'Essa página não existe. Talvez tenha mudado de lugar ou o link esteja errado.',
     somethingWrong: 'Algo deu errado',
@@ -257,6 +264,7 @@ const pt: Messages = {
     openMenu: 'Abrir menu',
     menu: 'Menu',
     signOut: 'Sair',
+    signIn: 'Entrar',
     install: 'Instalar app',
     iosInstall: (share, add) => `Para instalar: toque em ${share} e depois em ${add}.`,
     iosShare: 'Compartilhar',
@@ -291,6 +299,7 @@ const pt: Messages = {
     noMatch: 'Nenhum jambo com esse filtro',
     count: (n) => `${n} jambo${n === 1 ? '' : 's'} no mapa`,
     away: (d) => `a ${d}`,
+    by: (name) => `por ${name}`,
   },
   form: {
     sheetLabel: 'Adicionar jambo',
@@ -349,6 +358,9 @@ const pt: Messages = {
     saveStatus: 'Salvar',
     statusError: 'Não foi possível atualizar a situação.',
     observed: 'Última checagem',
+    addedBy: (name) => `Adicionado por ${name}`,
+    you: 'você',
+    someone: 'alguém',
   },
   list: {
     title: 'Jambos',

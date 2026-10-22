@@ -16,6 +16,8 @@ import Icon from '../../components/Icon.tsx';
 import { useI18n } from '../../i18n/useI18n.ts';
 import StatusChip from '../../components/StatusChip.tsx';
 import type { Tree } from '../../types/tree.ts';
+import { useAuth } from '../../auth/useAuth.ts';
+import { ownerLabel } from '../tree-detail/ownerLabel.ts';
 import styles from './MapView.module.css';
 
 type Status = 'loading' | 'ready' | 'error';
@@ -36,6 +38,7 @@ export default function MapView() {
   const { open: openDetail } = useTreeDetailModal();
   const location = useLocation();
   const { t } = useI18n();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [trees, setTrees] = useState<Tree[]>([]);
   const [status, setStatus] = useState<Status>('loading');
@@ -266,11 +269,11 @@ export default function MapView() {
                       />
                       <span className={styles.rowText}>
                         <span className={styles.rowName}>{treeName(tree)}</span>
-                        {center && (
-                          <span className={styles.rowMeta}>
-                            {t.map.away(formatDistance(distanceMeters(center, tree)))}
-                          </span>
-                        )}
+                        <span className={styles.rowMeta}>
+                          {center &&
+                            `${t.map.away(formatDistance(distanceMeters(center, tree)))} · `}
+                          {t.map.by(ownerLabel(t, tree, user?.id))}
+                        </span>
                       </span>
                       <StatusChip tree={tree} />
                     </button>

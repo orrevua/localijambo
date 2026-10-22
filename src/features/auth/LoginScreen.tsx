@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '../../auth/useAuth.ts';
+import { Link } from 'react-router';
 import { useI18n } from '../../i18n/useI18n.ts';
 import LanguageToggle from '../../components/LanguageToggle.tsx';
 import styles from './LoginScreen.module.css';
@@ -55,9 +56,7 @@ export default function LoginScreen() {
       <img className={styles.logo} src="/logo.svg" alt="" width={72} height={72} />
       <h1 className={styles.title}>localijambo</h1>
       <p className={styles.subtitle}>
-        {mode === 'signin'
-          ? t.login.signInSubtitle
-          : t.login.signUpSubtitle}
+        {mode === 'signin' ? t.login.signInSubtitle : t.login.signUpSubtitle}
       </p>
 
       <form className={styles.form} onSubmit={onSubmit}>
@@ -116,6 +115,9 @@ export default function LoginScreen() {
           </>
         )}
       </p>
+      <Link to="/" className={styles.browse}>
+        {t.common.browseMap}
+      </Link>
     </div>
   );
 }

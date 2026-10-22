@@ -22,5 +22,13 @@ export interface Tree {
 
 export type NewTree = Pick<
   Tree,
-  'clientId' | 'lon' | 'lat' | 'species' | 'variety' | 'notes' | 'fruitingStatus' | 'ripeness' | 'isShared'
+  | 'clientId'
+  | 'lon'
+  | 'lat'
+  | 'species'
+  | 'variety'
+  | 'notes'
+  | 'fruitingStatus'
+  | 'ripeness'
+  | 'isShared'
 >;

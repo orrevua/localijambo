@@ -68,11 +68,11 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <I18nProvider>
-    <AuthProvider>
-      <SyncProvider>
-        <RouterProvider router={router} />
-      </SyncProvider>
-    </AuthProvider>
+      <AuthProvider>
+        <SyncProvider>
+          <RouterProvider router={router} />
+        </SyncProvider>
+      </AuthProvider>
     </I18nProvider>
   </StrictMode>,
 );
