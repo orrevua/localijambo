@@ -1,31 +1,16 @@
 import { useEffect, useState } from 'react';
 import type { RefObject } from 'react';
 import maplibregl from 'maplibre-gl';
-import type { StyleSpecification } from 'maplibre-gl';
 
 // Recife, NE Brazil — fallback only, used until the device location resolves.
 const FALLBACK_CENTER: [number, number] = [-34.9, -8.05];
 const FALLBACK_ZOOM = 12;
 const LOCATED_ZOOM = 16;
 
-// CARTO Positron: a quiet, near-monochrome basemap so the pastel pins stand out.
-const BASEMAP_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    carto: {
-      type: 'raster',
-      tiles: ['a', 'b', 'c', 'd'].map(
-        (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}@2x.png`,
-      ),
-      tileSize: 256,
-      // Cap here so MapLibre overzooms instead of requesting tiles past z19.
-      maxzoom: 19,
-      attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  },
-  layers: [{ id: 'carto', type: 'raster', source: 'carto' }],
-};
+// OpenFreeMap Positron: free, keyless, unlimited vector basemap built on
+// OpenStreetMap — quiet and near-monochrome so the pastel pins stand out.
+// The style carries its own attribution.
+const BASEMAP_STYLE = 'https://tiles.openfreemap.org/styles/positron';
 
 interface UseMapOptions {
   /** Center on the device's current location on first load (default: true). */

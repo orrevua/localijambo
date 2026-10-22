@@ -58,11 +58,11 @@ export default defineConfig({
         // IndexedDB copy, and a stale HTTP cache would resurrect deleted trees.
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/[a-d]\.basemaps\.cartocdn\.com\/.*/i,
+            urlPattern: /^https:\/\/tiles\.openfreemap\.org\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'map-tiles',
-              expiration: { maxEntries: 500, maxAgeSeconds: 2592000 },
+              expiration: { maxEntries: 1000, maxAgeSeconds: 2592000 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
