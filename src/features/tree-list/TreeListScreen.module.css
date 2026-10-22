@@ -1,3 +1,73 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.count {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+
+.search:focus-within {
+  border-color: var(--rose-300);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+}
+
+.scopes {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.scope {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.scopeOn {
+  background: var(--rose-500);
+  color: #fff;
+}
+
 .list {
   list-style: none;
   margin: 0;
@@ -8,20 +78,50 @@
 }
 
 .row {
-  display: block;
-  padding: var(--space-md);
-  border: 1px solid rgba(36, 16, 22, 0.12);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  background: #fff;
-  color: var(--color-ink);
-  text-decoration: none;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  transition: border-color 0.15s;
 }
 
-.species {
-  font-weight: 600;
+.row:hover {
+  border-color: var(--rose-200);
+}
+
+.pin {
+  flex: none;
+  width: 2rem;
+  height: 2.25rem;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-weight: 650;
 }
 
 .meta {
-  color: var(--color-magenta);
-  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.none {
+  margin: var(--space-lg) 0;
+  text-align: center;
+  color: var(--ink-soft);
 }

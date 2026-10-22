@@ -2,19 +2,22 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router';
 import { useAuth } from '../../auth/useAuth.ts';
+import { useInstallPrompt } from '../../pwa/useInstallPrompt.ts';
+import Icon from '../../components/Icon.tsx';
 import { NavDrawerContext } from './NavDrawerContext.ts';
 import type { NavDrawerValue } from './NavDrawerContext.ts';
 import styles from './NavDrawer.module.css';
 
 const LINKS = [
   { to: '/', label: 'Map', end: true },
-  { to: '/list', label: 'Trees', end: false },
+  { to: '/list', label: 'Jambos', end: false },
   { to: '/dashboard', label: 'Dashboard', end: false },
   { to: '/profile', label: 'Profile', end: false },
 ];
 
 export function NavDrawerProvider({ children }: { children: ReactNode }) {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const install = useInstallPrompt();
   const [isOpen, setIsOpen] = useState(false);
 
   const open = useCallback(() => setIsOpen(true), []);
@@ -48,6 +51,13 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
             aria-label="Menu"
             onClick={(e) => e.stopPropagation()}
           >
+            <div className={styles.brand}>
+              <img src="/logo.svg" alt="" width={36} height={36} />
+              <div>
+                <p className={styles.brandName}>localijambo</p>
+                {user?.email && <p className={styles.email}>{user.email}</p>}
+              </div>
+            </div>
             <nav className={styles.links}>
               {LINKS.map(({ to, label, end }) => (
                 <NavLink
@@ -63,6 +73,21 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
                 </NavLink>
               ))}
             </nav>
+            {install.mode === 'prompt' && (
+              <button
+                type="button"
+                className={styles.install}
+                onClick={() => void install.install()}
+              >
+                <Icon name="download" size={20} />
+                Install app
+              </button>
+            )}
+            {install.mode === 'ios' && (
+              <p className={styles.iosHint}>
+                Install: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
+              </p>
+            )}
             <button
               type="button"
               className={styles.signout}

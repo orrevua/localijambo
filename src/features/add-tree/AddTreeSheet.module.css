@@ -1,0 +1,23 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.coords {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,18 +1,67 @@
+/*
+ * Localijambo palette — soft pastels pulled from the jambo vermelho:
+ * blush skin, rose flesh, mint leaves, a creamy white pulp.
+ */
 :root {
-  --color-crimson: #c21030;
-  --color-magenta: #b0165a;
-  --color-leaf: #2e7d32;
-  --color-leaf-dark: #1b5e20;
-  --color-cream: #fff7f2;
-  --color-ink: #241016;
+  color-scheme: light;
+
+  --bg: #fff8f6;
+  --surface: #ffffff;
+  --surface-soft: #fdf0f2;
+  --line: #f1e1e5;
+
+  --ink: #3d2a33;
+  --ink-soft: #8b717b;
+
+  --rose-50: #fff1f4;
+  --rose-100: #fde2e8;
+  --rose-200: #f8c8d3;
+  --rose-300: #f1a7b8;
+  --rose-400: #e5839a;
+  --rose-500: #c9526d; /* primary — dark enough for white text */
+  --rose-600: #ad3f59;
+
+  --mint-100: #e3f4e9;
+  --mint-200: #c3e6d0;
+  --mint-400: #84c49d;
+  --mint-600: #3f8a5f;
+
+  --butter-100: #fff4d8;
+  --butter-400: #f0c56b;
+  --butter-600: #a87a1c;
+
+  --lilac-100: #efeafa;
+
+  --accent: var(--rose-500);
+  --accent-hover: var(--rose-600);
+
+  /* Legacy names kept so older modules pick up the new palette. */
+  --color-crimson: var(--rose-500);
+  --color-magenta: var(--ink-soft);
+  --color-leaf: var(--mint-600);
+  --color-leaf-dark: var(--mint-600);
+  --color-cream: var(--bg);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-soft);
 
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
 
-  --radius-md: 0.5rem;
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.375rem;
+  --radius-pill: 999px;
 
-  --nav-height: 3.5rem;
-  --header-height: 3rem;
+  --shadow-sm: 0 1px 2px rgba(61, 42, 51, 0.06), 0 1px 6px rgba(61, 42, 51, 0.05);
+  --shadow-md: 0 6px 24px rgba(61, 42, 51, 0.12);
+
+  --font:
+    ui-rounded, 'SF Pro Rounded', 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height: calc(4rem + var(--safe-bottom));
+  --header-height: calc(3.25rem + var(--safe-top));
 }

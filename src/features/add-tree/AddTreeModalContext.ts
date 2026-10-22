@@ -6,8 +6,14 @@ export interface AddTreeCoords {
 }
 
 export interface AddTreeModalValue {
-  /** Open the add-tree modal, optionally pre-seeded with a dropped location. */
+  /**
+   * Start adding a jambo. With coords, opens the details form directly;
+   * without, switches the map into "place the pin" mode.
+   */
   open: (coords?: AddTreeCoords) => void;
+  /** True while the map is in pin-placement mode. */
+  placing: boolean;
+  cancelPlacing: () => void;
 }
 
 export const AddTreeModalContext = createContext<AddTreeModalValue | null>(null);

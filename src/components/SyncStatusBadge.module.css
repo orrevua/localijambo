@@ -2,13 +2,13 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
+  padding: 0.3rem 0.7rem;
   border: none;
-  border-radius: var(--radius-md);
-  background: var(--color-magenta);
-  color: var(--color-cream);
+  border-radius: var(--radius-pill);
+  background: var(--lilac-100);
+  color: #6b5596;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
 }
 
@@ -18,14 +18,15 @@
 }
 
 .error {
-  background: var(--color-crimson);
+  background: var(--rose-100);
+  color: var(--rose-600);
 }
 
 .spinner {
   width: 0.7rem;
   height: 0.7rem;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: var(--color-cream);
+  border: 2px solid currentColor;
+  border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

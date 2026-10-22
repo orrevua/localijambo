@@ -8,21 +8,23 @@ const FALLBACK_CENTER: [number, number] = [-34.9, -8.05];
 const FALLBACK_ZOOM = 12;
 const LOCATED_ZOOM = 16;
 
-const OSM_STYLE: StyleSpecification = {
+// CARTO Positron: a quiet, near-monochrome basemap so the pastel pins stand out.
+const BASEMAP_STYLE: StyleSpecification = {
   version: 8,
   sources: {
-    osm: {
+    carto: {
       type: 'raster',
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tiles: ['a', 'b', 'c', 'd'].map(
+        (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}@2x.png`,
+      ),
       tileSize: 256,
-      // OSM serves tiles only up to z19; cap here so MapLibre overzooms
-      // (upscales z19) instead of requesting nonexistent z20 tiles (which
-      // return a 400 error page with no CORS header).
+      // Cap here so MapLibre overzooms instead of requesting tiles past z19.
       maxzoom: 19,
-      attribution: '© OpenStreetMap contributors',
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
     },
   },
-  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+  layers: [{ id: 'carto', type: 'raster', source: 'carto' }],
 };
 
 interface UseMapOptions {
@@ -34,6 +36,13 @@ export interface UseMapResult {
   map: maplibregl.Map | null;
   /** True until the initial device-location lookup resolves (success or fail). */
   locating: boolean;
+  /** Device location from the startup lookup, if it succeeded. */
+  userPos: UserPosition | null;
+}
+
+export interface UserPosition {
+  lon: number;
+  lat: number;
 }
 
 export function useMap(
@@ -42,28 +51,19 @@ export function useMap(
 ): UseMapResult {
   const [map, setMap] = useState<maplibregl.Map | null>(null);
   const [locating, setLocating] = useState(centerOnUser && 'geolocation' in navigator);
+  const [userPos, setUserPos] = useState<UserPosition | null>(null);
 
   useEffect(() => {
     if (!container.current) return;
 
     const instance = new maplibregl.Map({
       container: container.current,
-      style: OSM_STYLE,
+      style: BASEMAP_STYLE,
+      attributionControl: { compact: true },
       center: FALLBACK_CENTER,
       zoom: FALLBACK_ZOOM,
-      maxZoom: 19, // OSM has no tiles beyond z19; never request z20
+      maxZoom: 19,
     });
-
-    instance.addControl(new maplibregl.NavigationControl(), 'top-right');
-
-    // trackUserLocation:false → the button recenters once per press instead of
-    // continuously following the user.
-    const geolocate = new maplibregl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true },
-      trackUserLocation: false,
-      fitBoundsOptions: { maxZoom: LOCATED_ZOOM },
-    });
-    instance.addControl(geolocate, 'top-right');
 
     const canLocate = centerOnUser && 'geolocation' in navigator;
 
@@ -73,14 +73,13 @@ export function useMap(
         setLocating(false);
         return;
       }
-      // Center via the geolocation API directly — deterministic, unlike
-      // GeolocateControl.trigger() which can no-op if fired before it's ready.
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           instance.jumpTo({
             center: [pos.coords.longitude, pos.coords.latitude],
             zoom: LOCATED_ZOOM,
           });
+          setUserPos({ lon: pos.coords.longitude, lat: pos.coords.latitude });
           setLocating(false);
         },
         () => setLocating(false), // denied/timeout → keep the fallback center
@@ -94,5 +93,5 @@ export function useMap(
     };
   }, [container, centerOnUser]);
 
-  return { map, locating };
+  return { map, locating, userPos };
 }

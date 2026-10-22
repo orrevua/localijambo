@@ -12,19 +12,21 @@ body,
 
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-  background: var(--color-cream);
-  color: var(--color-ink);
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
 }
 
 a {
-  color: var(--color-magenta);
+  color: var(--accent);
 }
 
 button {
@@ -32,14 +34,71 @@ button {
   cursor: pointer;
 }
 
-.btn {
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-crimson);
-  color: var(--color-cream);
+button:disabled {
+  cursor: default;
 }
 
-.btn:hover {
-  background: var(--color-magenta);
+:focus-visible {
+  outline: 2px solid var(--rose-300);
+  outline-offset: 2px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 2.75rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.btn-soft {
+  background: var(--rose-100);
+  color: var(--rose-600);
+}
+
+.btn-soft:hover:not(:disabled) {
+  background: var(--rose-200);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-soft);
+}
+
+/* MapLibre controls, softened to match the palette. */
+.maplibregl-ctrl-group {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 0.65rem;
+  background: rgba(255, 255, 255, 0.7) !important;
+  border-radius: var(--radius-sm) 0 0 0;
 }

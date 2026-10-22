@@ -1,7 +1,17 @@
 .bar {
-  padding: var(--space-xs) var(--space-md);
-  background: var(--color-ink);
-  color: var(--color-cream);
-  font-size: 0.85rem;
+  position: fixed;
+  top: calc(var(--header-height) + 3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: max-content;
+  max-width: calc(100% - 2 * var(--space-md));
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: var(--butter-100);
+  color: var(--butter-600);
+  font-size: 0.8rem;
+  font-weight: 600;
   text-align: center;
+  box-shadow: var(--shadow-sm);
 }

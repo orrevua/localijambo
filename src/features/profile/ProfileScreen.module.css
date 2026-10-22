@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  max-width: 40rem;
+  margin: 0 auto;
 }
 
 .identity {
@@ -11,8 +13,8 @@
 }
 
 .title {
-  color: var(--color-crimson);
   margin: 0;
+  font-size: 1.5rem;
 }
 
 .email {
@@ -33,13 +35,14 @@
   flex-direction: column;
   gap: var(--space-xs);
   padding: var(--space-md);
-  border: 1px solid rgba(36, 16, 22, 0.12);
+  border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  background: var(--color-cream);
+  background: var(--surface);
 }
 
 .cardBig {
-  border-color: var(--color-crimson);
+  border-color: var(--rose-200);
+  background: var(--rose-50);
 }
 
 .cardValue {
@@ -76,7 +79,7 @@
   display: flex;
   justify-content: space-between;
   padding: var(--space-xs) 0;
-  border-bottom: 1px solid rgba(36, 16, 22, 0.08);
+  border-bottom: 1px solid var(--line);
 }
 
 .row dt {

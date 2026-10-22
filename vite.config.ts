@@ -12,16 +12,25 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'logo.svg', 'icons/apple-touch-icon.png'],
       manifest: {
+        id: '/',
         name: 'Localijambo',
-        short_name: 'Jambo',
-        theme_color: '#C21030',
-        background_color: '#FFF7F2',
+        short_name: 'Localijambo',
+        description: 'Find, map and share jambo vermelho trees near you — works offline.',
+        lang: 'en',
+        categories: ['food', 'lifestyle', 'navigation'],
+        theme_color: '#FFF8F6',
+        background_color: '#FFF8F6',
         display: 'standalone',
+        display_override: ['standalone', 'minimal-ui'],
         orientation: 'portrait',
         start_url: '/',
         scope: '/',
+        shortcuts: [
+          { name: 'Jambo list', short_name: 'List', url: '/list' },
+          { name: 'Dashboard', short_name: 'Dashboard', url: '/dashboard' },
+        ],
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -41,25 +50,19 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        // Supabase reads are deliberately not cached here: the app keeps its own
+        // IndexedDB copy, and a stale HTTP cache would resurrect deleted trees.
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/[abc]\.tile\.openstreetmap\.org\/.*/i,
+            urlPattern: /^https:\/\/[a-d]\.basemaps\.cartocdn\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'osm-tiles',
+              cacheName: 'map-tiles',
               expiration: { maxEntries: 500, maxAgeSeconds: 2592000 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
-            urlPattern: ({ request }) =>
-              request.method === 'GET' && /\/rest\/v1\//.test(request.url),
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-reads',
-              networkTimeoutSeconds: 4,
-              expiration: { maxEntries: 200 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

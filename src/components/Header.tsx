@@ -1,4 +1,6 @@
 import { useNavDrawer } from '../features/nav/useNavDrawer.ts';
+import Icon from './Icon.tsx';
+import SyncStatusBadge from './SyncStatusBadge.tsx';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -7,10 +9,13 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <button type="button" className={styles.menu} aria-label="Open menu" onClick={open}>
-        <span className={styles.bars} aria-hidden="true" />
+        <Icon name="menu" />
       </button>
-      <img className={styles.logo} src="/logo.svg" alt="" width={28} height={28} />
-      <span className={styles.wordmark}>Localijambo</span>
+      <img className={styles.logo} src="/logo.svg" alt="" width={26} height={26} />
+      <span className={styles.wordmark}>localijambo</span>
+      <span className={styles.status}>
+        <SyncStatusBadge />
+      </span>
     </header>
   );
 }

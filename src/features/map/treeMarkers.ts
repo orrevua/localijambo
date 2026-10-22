@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import type { Tree } from '../../types/tree.ts';
+import { jamboTone, treeName } from '../../lib/jamboStatus.ts';
 import { applyJamboPin } from './jamboPin.ts';
 
 export function renderTreeMarkers(
@@ -10,11 +11,12 @@ export function renderTreeMarkers(
   return trees.map((tree) => {
     const el = document.createElement('button');
     el.type = 'button';
-    el.setAttribute('aria-label', tree.variety ?? tree.species);
+    el.setAttribute('aria-label', treeName(tree));
+    el.title = treeName(tree);
     el.style.border = 'none';
     el.style.background = 'none';
     el.style.padding = '0';
-    applyJamboPin(el);
+    applyJamboPin(el, jamboTone(tree));
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       onSelect(tree.id);

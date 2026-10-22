@@ -9,11 +9,12 @@ import { dirname, join } from 'node:path';
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'icons');
 mkdirSync(OUT, { recursive: true });
 
-const CREAM = [0xff, 0xf7, 0xf2];
-const CRIMSON = [0xc2, 0x10, 0x30];
-const MAGENTA = [0xb0, 0x16, 0x5a];
-const LEAF = [0x2e, 0x7d, 0x32];
-const LEAF_DARK = [0x1b, 0x5e, 0x20];
+// Pastel palette (see src/styles/theme.css).
+const CREAM = [0xfd, 0xe2, 0xe8]; // blush background
+const CRIMSON = [0xee, 0x8f, 0xa4]; // fruit gradient top
+const MAGENTA = [0xc9, 0x52, 0x6d]; // fruit gradient bottom
+const LEAF = [0x84, 0xc4, 0x9d];
+const LEAF_DARK = [0x3f, 0x8a, 0x5f];
 
 // CRC32 for PNG chunks.
 const CRC_TABLE = (() => {

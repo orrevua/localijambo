@@ -1,0 +1,38 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.chip::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ripe {
+  background: var(--rose-100);
+  color: var(--rose-600);
+}
+
+.fruiting {
+  background: var(--butter-100);
+  color: var(--butter-600);
+}
+
+.flowering {
+  background: var(--lilac-100);
+  color: #7a62a8;
+}
+
+.resting {
+  background: var(--mint-100);
+  color: var(--mint-600);
+}

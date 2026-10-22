@@ -1,62 +1,69 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import AddTreeFlow from './AddTreeFlow.tsx';
+import { useLocation, useNavigate } from 'react-router';
+import Sheet from '../../components/Sheet.tsx';
+import TreeForm from './TreeForm.tsx';
 import { AddTreeModalContext } from './AddTreeModalContext.ts';
 import type { AddTreeCoords, AddTreeModalValue } from './AddTreeModalContext.ts';
-import styles from './AddTreeModal.module.css';
+import styles from './AddTreeSheet.module.css';
 
 export function AddTreeModalProvider({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [coords, setCoords] = useState<AddTreeCoords | null>(null);
+  const [placing, setPlacing] = useState(false);
 
-  const close = useCallback(() => {
-    setIsOpen(false);
-    setCoords(null);
-  }, []);
+  // Leaving the map abandons pin placement (state adjusted during render).
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (prevPath !== pathname) {
+    setPrevPath(pathname);
+    if (pathname !== '/') setPlacing(false);
+  }
 
-  const value = useMemo<AddTreeModalValue>(
-    () => ({
-      open: (c) => {
-        setCoords(c ?? null);
-        setIsOpen(true);
-      },
-    }),
-    [],
+  const close = useCallback(() => setCoords(null), []);
+  const cancelPlacing = useCallback(() => setPlacing(false), []);
+
+  const open = useCallback(
+    (c?: AddTreeCoords) => {
+      if (c) {
+        setPlacing(false);
+        setCoords(c);
+        return;
+      }
+      setPlacing(true);
+      if (pathname !== '/') navigate('/');
+    },
+    [navigate, pathname],
   );
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-    };
-    document.addEventListener('keydown', onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isOpen, close]);
+  const value = useMemo<AddTreeModalValue>(
+    () => ({ open, placing, cancelPlacing }),
+    [open, placing, cancelPlacing],
+  );
 
   return (
     <AddTreeModalContext value={value}>
       {children}
-      {isOpen && (
-        <div className={styles.backdrop} onClick={close}>
-          <div
-            className={styles.panel}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Add a tree"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button type="button" className={styles.close} aria-label="Close" onClick={close}>
-              ×
-            </button>
-            {/* key forces a fresh flow each time the modal opens */}
-            <AddTreeFlow key={coords ? `${coords.lon},${coords.lat}` : 'blank'} initialCoords={coords} onCreated={close} />
+      {coords && (
+        <Sheet label="Add a jambo" onClose={close}>
+          <div className={styles.screen}>
+            <header className={styles.head}>
+              <h2 className={styles.title}>New jambo</h2>
+              <p className={styles.coords}>
+                {coords.lat.toFixed(5)}, {coords.lon.toFixed(5)}
+              </p>
+            </header>
+            <TreeForm
+              lon={coords.lon}
+              lat={coords.lat}
+              onCreated={() => {
+                close();
+                // Land on the map, centred on the new jambo.
+                navigate('/', { state: { focus: coords } });
+              }}
+            />
           </div>
-        </div>
+        </Sheet>
       )}
     </AddTreeModalContext>
   );

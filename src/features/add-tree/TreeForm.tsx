@@ -3,17 +3,60 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { create } from '../../data/treesRepo.ts';
 import { processPhoto } from '../../lib/photo.ts';
+import Icon from '../../components/Icon.tsx';
 import type { FruitingStatus, Ripeness } from '../../types/tree.ts';
 import styles from './TreeForm.module.css';
 
-const FRUITING: FruitingStatus[] = ['none', 'flowering', 'fruiting'];
-const RIPENESS: Ripeness[] = ['unknown', 'unripe', 'ripening', 'ripe', 'overripe'];
+const FRUITING: { value: FruitingStatus; label: string }[] = [
+  { value: 'none', label: 'Resting' },
+  { value: 'flowering', label: 'Flowering' },
+  { value: 'fruiting', label: 'Fruiting' },
+];
+
+const RIPENESS: { value: Ripeness; label: string }[] = [
+  { value: 'unripe', label: 'Green' },
+  { value: 'ripening', label: 'Ripening' },
+  { value: 'ripe', label: 'Ripe' },
+  { value: 'overripe', label: 'Overripe' },
+];
 
 interface Props {
   lon: number;
   lat: number;
   /** Called after a successful save (e.g. to close a host modal). */
   onCreated?: () => void;
+}
+
+function Chips<T extends string>({
+  options,
+  value,
+  onChange,
+  disabled,
+  label,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+  disabled: boolean;
+  label: string;
+}) {
+  return (
+    <div className={styles.chips} role="radiogroup" aria-label={label}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          role="radio"
+          aria-checked={value === o.value}
+          className={`${styles.chip} ${value === o.value ? styles.chipOn : ''}`}
+          onClick={() => onChange(o.value)}
+          disabled={disabled}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export default function TreeForm({ lon, lat, onCreated }: Props) {
@@ -46,6 +89,12 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
     }
   }
 
+  function onFruiting(v: FruitingStatus) {
+    setFruitingStatus(v);
+    if (v !== 'fruiting') setRipeness('unknown');
+    else if (ripeness === 'unknown') setRipeness('unripe');
+  }
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -65,8 +114,8 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
         },
         photo?.blob,
       );
-      onCreated?.();
-      navigate(`/tree/${tree.id}`, { replace: true });
+      if (onCreated) onCreated();
+      else navigate(`/tree/${tree.id}`, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save the tree.');
       setBusy(false);
@@ -75,58 +124,62 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
 
   return (
     <form className={styles.form} onSubmit={onSubmit}>
+      <div className={styles.field}>
+        <span className={styles.label}>How is it now?</span>
+        <Chips
+          label="Fruiting status"
+          options={FRUITING}
+          value={fruitingStatus}
+          onChange={onFruiting}
+          disabled={busy}
+        />
+        {fruitingStatus === 'fruiting' && (
+          <Chips
+            label="Ripeness"
+            options={RIPENESS}
+            value={ripeness}
+            onChange={setRipeness}
+            disabled={busy}
+          />
+        )}
+      </div>
+
       <label className={styles.field}>
-        Variety
+        <span className={styles.label}>Name</span>
         <input
           className={styles.input}
           value={variety}
           onChange={(e) => setVariety(e.target.value)}
           disabled={busy}
+          placeholder="jambo vermelho"
         />
       </label>
+
       <label className={styles.field}>
-        Notes
+        <span className={styles.label}>
+          Notes <span className={styles.optional}>optional</span>
+        </span>
         <textarea
           className={styles.input}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           disabled={busy}
-          rows={3}
+          rows={2}
+          placeholder="Next to the bakery, branches over the wall…"
         />
       </label>
-      <label className={styles.field}>
-        Fruiting status
-        <select
-          className={styles.input}
-          value={fruitingStatus}
-          onChange={(e) => setFruitingStatus(e.target.value as FruitingStatus)}
-          disabled={busy}
-        >
-          {FRUITING.map((v) => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className={styles.field}>
-        Ripeness
-        <select
-          className={styles.input}
-          value={ripeness}
-          onChange={(e) => setRipeness(e.target.value as Ripeness)}
-          disabled={busy}
-        >
-          {RIPENESS.map((v) => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className={styles.field}>
-        Photo
+
+      <label className={styles.photo}>
+        {photo ? (
+          <img className={styles.preview} src={photo.url} alt="Selected tree" />
+        ) : (
+          <>
+            <Icon name="camera" />
+            <span>Add a photo</span>
+          </>
+        )}
         <input
+          className={styles.fileInput}
           type="file"
           accept="image/*"
           capture="environment"
@@ -137,19 +190,24 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
           }}
         />
       </label>
-      {photo && <img className={styles.preview} src={photo.url} alt="Selected tree" />}
+
       <label className={styles.toggle}>
+        <span>
+          <span className={styles.label}>Share with everyone</span>
+          <span className={styles.hint}>Others will see this jambo on their map</span>
+        </span>
         <input
           type="checkbox"
+          className={styles.switch}
           checked={isShared}
           onChange={(e) => setIsShared(e.target.checked)}
           disabled={busy}
-        />{' '}
-        Share with everyone
+        />
       </label>
+
       {error && <p className={styles.error}>{error}</p>}
       <button className="btn" type="submit" disabled={busy}>
-        {busy ? 'Saving…' : 'Save tree'}
+        {busy ? 'Saving…' : 'Save jambo'}
       </button>
     </form>
   );

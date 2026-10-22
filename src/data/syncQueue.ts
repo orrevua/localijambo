@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase.ts';
 import { idbDelete, idbGetAll, idbPut } from '../lib/idb.ts';
 import type { PendingMutation } from '../lib/idb.ts';
-import { emitSyncChange } from '../sync/syncEvents.ts';
+import { emitSyncChange, emitTreesChanged } from '../sync/syncEvents.ts';
 import { registerBackgroundSync } from '../sync/backgroundSync.ts';
 import { syncPhotos } from './photoSync.ts';
 import { fromRow, type TreeRow } from './treeRow.ts';
@@ -52,10 +52,7 @@ export async function resetBackoff(): Promise<void> {
 
 async function pushMutation(mutation: PendingMutation): Promise<Tree | null> {
   if (mutation.op === 'delete') {
-    const { error } = await supabase
-      .from('trees')
-      .delete()
-      .eq('client_id', mutation.clientId);
+    const { error } = await supabase.from('trees').delete().eq('client_id', mutation.clientId);
     if (error) throw error;
     return null;
   }
@@ -116,6 +113,7 @@ export async function flush(): Promise<SyncResult> {
     const remaining = await idbGetAll('pending_mutations');
     const photos = await idbGetAll('pending_photos');
     emitSyncChange();
+    if (synced > 0) emitTreesChanged();
     return { synced, failed, pending: remaining.length + photos.length };
   } finally {
     flushing = false;

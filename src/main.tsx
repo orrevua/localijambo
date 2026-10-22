@@ -13,6 +13,7 @@ import StateMessage from './components/StateMessage.tsx';
 import { AuthProvider } from './auth/AuthProvider.tsx';
 import { SyncProvider } from './sync/SyncProvider.tsx';
 import { RequireAnon, RequireAuth } from './auth/RequireAuth.tsx';
+import './pwa/useInstallPrompt.ts';
 import './styles/theme.css';
 import './styles/global.css';
 

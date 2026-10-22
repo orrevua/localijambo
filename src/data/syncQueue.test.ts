@@ -17,7 +17,7 @@ vi.mock('../lib/supabase.ts', () => ({
   },
 }));
 vi.mock('./photoSync.ts', () => ({ syncPhotos: vi.fn(async () => {}) }));
-vi.mock('../sync/syncEvents.ts', () => ({ emitSyncChange: vi.fn() }));
+vi.mock('../sync/syncEvents.ts', () => ({ emitSyncChange: vi.fn(), emitTreesChanged: vi.fn() }));
 vi.mock('../sync/backgroundSync.ts', () => ({ registerBackgroundSync: vi.fn(async () => {}) }));
 vi.mock('./treeRow.ts', () => ({
   fromRow: (row: { client_id: string }) => ({ clientId: row.client_id, id: row.client_id }),

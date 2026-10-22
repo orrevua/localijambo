@@ -46,9 +46,12 @@ export default function LoginScreen() {
 
   return (
     <div className={styles.screen}>
-      <h2 className={styles.title}>Localijambo</h2>
+      <img className={styles.logo} src="/logo.svg" alt="" width={72} height={72} />
+      <h1 className={styles.title}>localijambo</h1>
       <p className={styles.subtitle}>
-        {mode === 'signin' ? 'Sign in to your account' : 'Create an account'}
+        {mode === 'signin'
+          ? 'Find the jambo trees around you. Sign in to continue.'
+          : 'Create an account to start mapping jambos.'}
       </p>
 
       <form className={styles.form} onSubmit={onSubmit}>
