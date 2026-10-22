@@ -11,13 +11,6 @@ export function jamboTone(tree: Pick<Tree, 'fruitingStatus' | 'ripeness'>): Jamb
   return 'resting';
 }
 
-export const TONE_LABEL: Record<JamboTone, string> = {
-  ripe: 'Ripe',
-  fruiting: 'Fruiting',
-  flowering: 'Flowering',
-  resting: 'Resting',
-};
-
 export function treeName(tree: Pick<Tree, 'variety' | 'species'>): string {
   const name = tree.variety ?? tree.species;
   return name.charAt(0).toUpperCase() + name.slice(1);

@@ -4,6 +4,7 @@ import { flush, resetBackoff } from '../data/syncQueue.ts';
 import { pendingCount, SYNC_EVENT } from './syncEvents.ts';
 import { onBackgroundSyncMessage } from './backgroundSync.ts';
 import { SyncContext } from './SyncContext.ts';
+import { useI18n } from '../i18n/useI18n.ts';
 
 export function SyncProvider({ children }: { children: ReactNode }) {
   const [pending, setPending] = useState(0);
@@ -11,6 +12,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false);
   const [lastError, setLastError] = useState<string | null>(null);
   const running = useRef(false);
+  const { t } = useI18n();
 
   const refreshPending = useCallback(() => {
     pendingCount()
@@ -21,7 +23,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const runFlush = useCallback(async () => {
     if (running.current) return;
     if (!navigator.onLine) {
-      setLastError("You're offline — changes will sync when you reconnect.");
+      setLastError(t.sync.offlineError);
       return;
     }
     running.current = true;
@@ -32,15 +34,15 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       setPending(result.pending);
       if (result.synced > 0) setLastSyncedAt(Date.now());
       if (result.failed > 0 && result.pending > 0) {
-        setLastError('Some changes could not sync yet. They will retry.');
+        setLastError(t.sync.partial);
       }
     } catch (err) {
-      setLastError(err instanceof Error ? err.message : 'Sync failed.');
+      setLastError(err instanceof Error ? err.message : t.sync.failed);
     } finally {
       running.current = false;
       setSyncing(false);
     }
-  }, []);
+  }, [t]);
 
   const syncNow = useCallback(() => {
     void runFlush();

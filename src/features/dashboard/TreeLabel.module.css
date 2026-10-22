@@ -1,0 +1,95 @@
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+}
+
+.label:hover .name {
+  color: var(--rose-600);
+}
+
+.pin {
+  flex: none;
+  width: 1.15rem;
+  height: 1.3rem;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub {
+  max-width: 14rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card {
+  position: fixed;
+  z-index: 900;
+  width: 16rem;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  font-size: 0.85rem;
+  pointer-events: none;
+  white-space: normal;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.forecast {
+  margin: var(--space-sm) 0 0;
+  color: var(--rose-600);
+  font-weight: 600;
+}
+
+.notes {
+  margin: var(--space-xs) 0 0;
+  color: var(--ink);
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px var(--space-sm);
+  margin: var(--space-sm) 0 0;
+  color: var(--ink-soft);
+}
+
+.meta dd {
+  margin: 0;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  display: block;
+  margin-top: var(--space-sm);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}

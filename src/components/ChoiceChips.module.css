@@ -1,0 +1,30 @@
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.chips + .chips {
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--line);
+}
+
+.chip {
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.on {
+  background: var(--rose-100);
+  border-color: var(--rose-200);
+  color: var(--rose-600);
+}

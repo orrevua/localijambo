@@ -1,4 +1,5 @@
 .screen {
+  position: relative;
   max-width: 22rem;
   min-height: 100%;
   margin: 0 auto;
@@ -8,6 +9,12 @@
   justify-content: center;
   gap: var(--space-md);
   text-align: center;
+}
+
+.lang {
+  position: absolute;
+  top: calc(var(--space-md) + var(--safe-top));
+  right: var(--space-md);
 }
 
 .logo {

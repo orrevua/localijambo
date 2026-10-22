@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import Icon from './Icon.tsx';
+import { useI18n } from '../i18n/useI18n.ts';
 import styles from './Sheet.module.css';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 /** Bottom sheet on phones, centered card on wider screens. */
 export default function Sheet({ label, onClose, children }: Props) {
+  const { t } = useI18n();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -34,7 +36,7 @@ export default function Sheet({ label, onClose, children }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <span className={styles.grabber} aria-hidden="true" />
-        <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
+        <button type="button" className={styles.close} aria-label={t.common.close} onClick={onClose}>
           <Icon name="close" size={20} />
         </button>
         {children}

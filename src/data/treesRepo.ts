@@ -151,6 +151,28 @@ export async function setShared(id: string, isShared: boolean): Promise<void> {
   emitTreesChanged();
 }
 
+/**
+ * Record a fresh observation of the tree's fruiting state. The server bumps
+ * updated_at, which the season forecast treats as the observation date.
+ */
+export async function updateStatus(
+  id: string,
+  fruitingStatus: Tree['fruitingStatus'],
+  ripeness: Tree['ripeness'],
+): Promise<Tree> {
+  const { data, error } = await supabase
+    .from('trees')
+    .update({ fruiting_status: fruitingStatus, ripeness })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  const tree = fromRow(data as TreeRow);
+  await idbPut('trees_cache', tree);
+  emitTreesChanged();
+  return tree;
+}
+
 export async function remove(id: string): Promise<void> {
   const cached = await findCached(id);
   const clientId = cached?.clientId ?? id;

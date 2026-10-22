@@ -117,3 +117,13 @@
 .signout:hover {
   background: var(--surface-soft);
 }
+
+.lang {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-md);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+}

@@ -14,6 +14,7 @@ export interface FruitingPrediction {
   stage: PhenologyStage;
   daysToRipeMin: number; // clamped >= 0
   daysToRipeMax: number; // clamped >= 0
+  daysToRipe: number; // best estimate (mean), clamped >= 0 — what `label` uses
   label: string; // human summary
   inSeason: boolean; // today's month within HARVEST_WINDOW
   confidence: PhenologyConfidence;
@@ -100,7 +101,8 @@ const MONTH_ABBR = [
 
 export function humanizeDays(days: number): string {
   if (days <= 0) return 'now';
-  if (days < 10) return `~${days} day${days === 1 ? '' : 's'}`;
+  // Under two weeks, days read better than "~1 weeks".
+  if (days < 14) return `~${days} day${days === 1 ? '' : 's'}`;
   const weeks = Math.round(days / 7);
   return `~${weeks} weeks`;
 }
@@ -164,6 +166,7 @@ export function predictFruiting(tree: Tree, now: Date): FruitingPrediction {
           stage: 'overripe',
           daysToRipeMin: 0,
           daysToRipeMax: 0,
+          daysToRipe: 0,
           label: buildLabel('overripe', 0, inSeason),
           inSeason,
           confidence: 'observed',
@@ -176,7 +179,9 @@ export function predictFruiting(tree: Tree, now: Date): FruitingPrediction {
           stage: 'harvest',
           daysToRipeMin: 0,
           daysToRipeMax: 0,
-          label: buildLabel('harvest', 0, inSeason),
+          daysToRipe: 0,
+          // Ripe fruit was seen on the tree: harvest now, whatever the calendar says.
+          label: buildLabel('harvest', 0, true),
           inSeason,
           confidence: 'observed',
           windowClosing: false,
@@ -207,6 +212,7 @@ function observedPrediction(
     stage,
     daysToRipeMin,
     daysToRipeMax,
+    daysToRipe: daysToRipeMean,
     label: buildLabel(stage, daysToRipeMean, inSeason),
     inSeason,
     confidence: 'observed',
@@ -223,6 +229,7 @@ function calendarPrediction(today: CalendarDay, inSeason: boolean): FruitingPred
       stage: 'harvest',
       daysToRipeMin: 0,
       daysToRipeMax: 0,
+      daysToRipe: 0,
       label: buildLabel('harvest', 0, inSeason),
       inSeason,
       confidence: 'calendar',
@@ -238,6 +245,7 @@ function calendarPrediction(today: CalendarDay, inSeason: boolean): FruitingPred
     stage,
     daysToRipeMin: daysToBloom + FLOWER_TO_RIPE_MIN,
     daysToRipeMax: daysToBloom + FLOWER_TO_RIPE_MAX,
+    daysToRipe: daysToRipeMean,
     label: buildLabel(stage, daysToRipeMean, inSeason),
     inSeason,
     confidence: 'calendar',

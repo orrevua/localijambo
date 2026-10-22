@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { getById, remove, setShared } from '../../data/treesRepo.ts';
+import { getById, remove, setShared, updateStatus } from '../../data/treesRepo.ts';
 import { supabase } from '../../lib/supabase.ts';
 import { useAuth } from '../../auth/useAuth.ts';
 import StateMessage from '../../components/StateMessage.tsx';
@@ -10,6 +10,14 @@ import { predictFruiting } from '../../lib/phenology.ts';
 import { treeName } from '../../lib/jamboStatus.ts';
 import type { Tree } from '../../types/tree.ts';
 import type { MapFocusState } from '../map/MapView.tsx';
+import { useI18n } from '../../i18n/useI18n.ts';
+import ChoiceChips from '../../components/ChoiceChips.tsx';
+import {
+  forecastLabel,
+  fruitingOptions,
+  ripenessFor,
+  ripenessOptions,
+} from '../../i18n/format.ts';
 import styles from './TreeDetailScreen.module.css';
 
 interface Props {
@@ -20,23 +28,17 @@ interface Props {
   onShowOnMap?: () => void;
 }
 
-const RIPENESS_LABEL: Record<Tree['ripeness'], string> = {
-  unknown: '—',
-  unripe: 'Green',
-  ripening: 'Ripening',
-  ripe: 'Ripe',
-  overripe: 'Overripe',
-};
-
 export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, locale } = useI18n();
   const [tree, setTree] = useState<Tree | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [draft, setDraft] = useState<Pick<Tree, 'fruitingStatus' | 'ripeness'> | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -47,7 +49,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
         setLoaded(true);
       })
       .catch((err) => {
-        if (active) setError(err instanceof Error ? err.message : 'Could not load tree.');
+        if (active) setError(err instanceof Error ? err.message : String(err));
       });
     return () => {
       active = false;
@@ -75,13 +77,13 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
   }, [photoPath]);
 
   if (!loaded && error)
-    return <StateMessage tone="error" title="Could not load jambo" detail={error} />;
-  if (!loaded) return <StateMessage title="Loading jambo…" />;
+    return <StateMessage tone="error" title={t.detail.loadError} detail={error} />;
+  if (!loaded) return <StateMessage title={t.detail.loading} />;
   if (!tree)
     return (
       <StateMessage
-        title="Jambo not found"
-        detail="It may have been deleted or is not shared with you."
+        title={t.detail.notFound}
+        detail={t.detail.notFoundDetail}
       />
     );
 
@@ -96,7 +98,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
       await setShared(tree.id, !tree.isShared);
       setTree({ ...tree, isShared: !tree.isShared });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not update sharing.');
+      setError(err instanceof Error ? err.message : t.detail.shareError);
     } finally {
       setBusy(false);
     }
@@ -110,9 +112,23 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
       await remove(tree.id);
       onDeleted();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not delete tree.');
+      setError(err instanceof Error ? err.message : t.detail.deleteError);
       setBusy(false);
       setConfirming(false);
+    }
+  }
+
+  async function onSaveStatus() {
+    if (!tree || !draft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setTree(await updateStatus(tree.id, draft.fruitingStatus, draft.ripeness));
+      setDraft(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.detail.statusError);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -133,52 +149,101 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
       {photoUrl && <img className={styles.photo} src={photoUrl} alt={treeName(tree)} />}
 
       <div className={`${styles.forecast} ${forecast.inSeason ? styles.inSeason : ''}`}>
-        <span className={styles.forecastLabel}>Forecast</span>
+        <span className={styles.forecastLabel}>{t.detail.forecast}</span>
         <span>
-          {forecast.label}
+          {forecastLabel(t, forecast)}
           {forecast.confidence === 'calendar' && (
             <span
               className={styles.estimate}
-              title="Estimated from the seasonal calendar, not a recent observation"
+              title={t.detail.estimatedTitle}
             >
               {' '}
-              · estimated
+              · {t.detail.estimated}
             </span>
           )}
         </span>
       </div>
 
+      {isOwner &&
+        (draft ? (
+          <div className={styles.statusEdit}>
+            <span className={styles.statusTitle}>{t.form.howNow}</span>
+            <ChoiceChips
+              label={t.form.fruitingLabel}
+              options={fruitingOptions(t)}
+              value={draft.fruitingStatus}
+              onChange={(v) =>
+                setDraft({ fruitingStatus: v, ripeness: ripenessFor(v, draft.ripeness) })
+              }
+              disabled={busy}
+            />
+            {draft.fruitingStatus === 'fruiting' && (
+              <ChoiceChips
+                label={t.form.ripenessLabel}
+                options={ripenessOptions(t)}
+                value={draft.ripeness}
+                onChange={(v) => setDraft({ ...draft, ripeness: v })}
+                disabled={busy}
+              />
+            )}
+            <div className={styles.confirmActions}>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                disabled={busy}
+                onClick={() => setDraft(null)}
+              >
+                {t.map.cancel}
+              </button>
+              <button type="button" className="btn" disabled={busy} onClick={onSaveStatus}>
+                {busy ? t.form.saving : t.detail.saveStatus}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className={styles.updateStatus}
+            onClick={() =>
+              setDraft({ fruitingStatus: tree.fruitingStatus, ripeness: tree.ripeness })
+            }
+          >
+            {t.detail.updateStatus}
+            <span className={styles.updateHint}>{t.detail.updateHint}</span>
+          </button>
+        ))}
+
       <dl className={styles.fields}>
         {tree.fruitingStatus === 'fruiting' && (
           <div>
-            <dt>Ripeness</dt>
-            <dd>{RIPENESS_LABEL[tree.ripeness]}</dd>
+            <dt>{t.detail.ripeness}</dt>
+            <dd>{t.profile.ripenessValue[tree.ripeness]}</dd>
           </div>
         )}
         <div>
-          <dt>Added</dt>
-          <dd>{new Date(tree.createdAt).toLocaleDateString()}</dd>
+          <dt>{t.detail.added}</dt>
+          <dd>{new Date(tree.createdAt).toLocaleDateString(locale)}</dd>
         </div>
         <div>
-          <dt>Visibility</dt>
-          <dd>{tree.isShared ? 'Shared' : 'Only you'}</dd>
+          <dt>{t.detail.visibility}</dt>
+          <dd>{tree.isShared ? t.detail.shared : t.detail.onlyYou}</dd>
         </div>
         {tree.notes && (
           <div className={styles.wide}>
-            <dt>Notes</dt>
+            <dt>{t.detail.notes}</dt>
             <dd>{tree.notes}</dd>
           </div>
         )}
       </dl>
 
       <button type="button" className="btn btn-soft" onClick={showOnMap}>
-        <Icon name="pin" size={20} /> Show on map
+        <Icon name="pin" size={20} /> {t.detail.showOnMap}
       </button>
 
       {isOwner && (
         <div className={styles.owner}>
           <label className={styles.toggle}>
-            <span>Share with everyone</span>
+            <span>{t.detail.share}</span>
             <input
               type="checkbox"
               className={styles.switch}
@@ -189,7 +254,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
           </label>
           {confirming ? (
             <div className={styles.confirm}>
-              <span>Delete this jambo for everyone?</span>
+              <span>{t.detail.confirmDelete}</span>
               <div className={styles.confirmActions}>
                 <button
                   type="button"
@@ -197,7 +262,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
                   disabled={busy}
                   onClick={() => setConfirming(false)}
                 >
-                  Keep
+                  {t.detail.keep}
                 </button>
                 <button
                   type="button"
@@ -205,7 +270,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
                   disabled={busy}
                   onClick={onDelete}
                 >
-                  {busy ? 'Deleting…' : 'Delete'}
+                  {busy ? t.detail.deleting : t.detail.delete}
                 </button>
               </div>
             </div>
@@ -216,7 +281,7 @@ export default function TreeDetail({ id, onDeleted, onShowOnMap }: Props) {
               disabled={busy}
               onClick={() => setConfirming(true)}
             >
-              <Icon name="trash" size={18} /> Delete jambo
+              <Icon name="trash" size={18} /> {t.detail.deleteJambo}
             </button>
           )}
         </div>

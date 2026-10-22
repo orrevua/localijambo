@@ -4,21 +4,12 @@ import { useNavigate } from 'react-router';
 import { create } from '../../data/treesRepo.ts';
 import { processPhoto } from '../../lib/photo.ts';
 import Icon from '../../components/Icon.tsx';
+import ChoiceChips from '../../components/ChoiceChips.tsx';
 import type { FruitingStatus, Ripeness } from '../../types/tree.ts';
+import { useI18n } from '../../i18n/useI18n.ts';
+import { fruitingOptions, ripenessFor, ripenessOptions } from '../../i18n/format.ts';
 import styles from './TreeForm.module.css';
 
-const FRUITING: { value: FruitingStatus; label: string }[] = [
-  { value: 'none', label: 'Resting' },
-  { value: 'flowering', label: 'Flowering' },
-  { value: 'fruiting', label: 'Fruiting' },
-];
-
-const RIPENESS: { value: Ripeness; label: string }[] = [
-  { value: 'unripe', label: 'Green' },
-  { value: 'ripening', label: 'Ripening' },
-  { value: 'ripe', label: 'Ripe' },
-  { value: 'overripe', label: 'Overripe' },
-];
 
 interface Props {
   lon: number;
@@ -27,41 +18,10 @@ interface Props {
   onCreated?: () => void;
 }
 
-function Chips<T extends string>({
-  options,
-  value,
-  onChange,
-  disabled,
-  label,
-}: {
-  options: { value: T; label: string }[];
-  value: T;
-  onChange: (v: T) => void;
-  disabled: boolean;
-  label: string;
-}) {
-  return (
-    <div className={styles.chips} role="radiogroup" aria-label={label}>
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          role="radio"
-          aria-checked={value === o.value}
-          className={`${styles.chip} ${value === o.value ? styles.chipOn : ''}`}
-          onClick={() => onChange(o.value)}
-          disabled={disabled}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export default function TreeForm({ lon, lat, onCreated }: Props) {
   const navigate = useNavigate();
-  const [variety, setVariety] = useState('jambo vermelho');
+  const { t } = useI18n();
+  const [variety, setVariety] = useState(t.form.defaultName);
   const [notes, setNotes] = useState('');
   const [fruitingStatus, setFruitingStatus] = useState<FruitingStatus>('none');
   const [ripeness, setRipeness] = useState<Ripeness>('unknown');
@@ -69,6 +29,7 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
   const [photo, setPhoto] = useState<{ blob: Blob; url: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     return () => {
@@ -85,14 +46,13 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
         return processed;
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not process the photo.');
+      setError(err instanceof Error ? err.message : t.form.photoError);
     }
   }
 
   function onFruiting(v: FruitingStatus) {
     setFruitingStatus(v);
-    if (v !== 'fruiting') setRipeness('unknown');
-    else if (ripeness === 'unknown') setRipeness('unripe');
+    setRipeness(ripenessFor(v, ripeness));
   }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -117,7 +77,7 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
       if (onCreated) onCreated();
       else navigate(`/tree/${tree.id}`, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not save the tree.');
+      setError(err instanceof Error ? err.message : t.form.saveError);
       setBusy(false);
     }
   }
@@ -125,18 +85,18 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
   return (
     <form className={styles.form} onSubmit={onSubmit}>
       <div className={styles.field}>
-        <span className={styles.label}>How is it now?</span>
-        <Chips
-          label="Fruiting status"
-          options={FRUITING}
+        <span className={styles.label}>{t.form.howNow}</span>
+        <ChoiceChips
+          label={t.form.fruitingLabel}
+          options={fruitingOptions(t)}
           value={fruitingStatus}
           onChange={onFruiting}
           disabled={busy}
         />
         {fruitingStatus === 'fruiting' && (
-          <Chips
-            label="Ripeness"
-            options={RIPENESS}
+          <ChoiceChips
+            label={t.form.ripenessLabel}
+            options={ripenessOptions(t)}
             value={ripeness}
             onChange={setRipeness}
             disabled={busy}
@@ -145,19 +105,19 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
       </div>
 
       <label className={styles.field}>
-        <span className={styles.label}>Name</span>
+        <span className={styles.label}>{t.form.name}</span>
         <input
           className={styles.input}
           value={variety}
           onChange={(e) => setVariety(e.target.value)}
           disabled={busy}
-          placeholder="jambo vermelho"
+          placeholder={t.form.defaultName}
         />
       </label>
 
       <label className={styles.field}>
         <span className={styles.label}>
-          Notes <span className={styles.optional}>optional</span>
+          {t.form.notes} <span className={styles.optional}>{t.form.optional}</span>
         </span>
         <textarea
           className={styles.input}
@@ -165,17 +125,17 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
           onChange={(e) => setNotes(e.target.value)}
           disabled={busy}
           rows={2}
-          placeholder="Next to the bakery, branches over the wall…"
+          placeholder={t.form.notesPlaceholder}
         />
       </label>
 
       <label className={styles.photo}>
         {photo ? (
-          <img className={styles.preview} src={photo.url} alt="Selected tree" />
+          <img className={styles.preview} src={photo.url} alt={t.form.photoAlt} />
         ) : (
           <>
             <Icon name="camera" />
-            <span>Add a photo</span>
+            <span>{t.form.addPhoto}</span>
           </>
         )}
         <input
@@ -193,8 +153,8 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
 
       <label className={styles.toggle}>
         <span>
-          <span className={styles.label}>Share with everyone</span>
-          <span className={styles.hint}>Others will see this jambo on their map</span>
+          <span className={styles.label}>{t.form.share}</span>
+          <span className={styles.hint}>{t.form.shareHint}</span>
         </span>
         <input
           type="checkbox"
@@ -207,7 +167,7 @@ export default function TreeForm({ lon, lat, onCreated }: Props) {
 
       {error && <p className={styles.error}>{error}</p>}
       <button className="btn" type="submit" disabled={busy}>
-        {busy ? 'Saving…' : 'Save jambo'}
+        {busy ? t.form.saving : t.form.save}
       </button>
     </form>
   );

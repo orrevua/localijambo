@@ -4,20 +4,23 @@ import { NavLink } from 'react-router';
 import { useAuth } from '../../auth/useAuth.ts';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt.ts';
 import Icon from '../../components/Icon.tsx';
+import LanguageToggle from '../../components/LanguageToggle.tsx';
+import { useI18n } from '../../i18n/useI18n.ts';
 import { NavDrawerContext } from './NavDrawerContext.ts';
 import type { NavDrawerValue } from './NavDrawerContext.ts';
 import styles from './NavDrawer.module.css';
 
 const LINKS = [
-  { to: '/', label: 'Map', end: true },
-  { to: '/list', label: 'Jambos', end: false },
-  { to: '/dashboard', label: 'Dashboard', end: false },
-  { to: '/profile', label: 'Profile', end: false },
-];
+  { to: '/', key: 'map', end: true },
+  { to: '/list', key: 'jambos', end: false },
+  { to: '/dashboard', key: 'dashboard', end: false },
+  { to: '/profile', key: 'profile', end: false },
+] as const;
 
 export function NavDrawerProvider({ children }: { children: ReactNode }) {
   const { signOut, user } = useAuth();
   const install = useInstallPrompt();
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
   const open = useCallback(() => setIsOpen(true), []);
@@ -48,7 +51,7 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
             className={styles.panel}
             role="dialog"
             aria-modal="true"
-            aria-label="Menu"
+            aria-label={t.nav.menu}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.brand}>
@@ -59,7 +62,7 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
               </div>
             </div>
             <nav className={styles.links}>
-              {LINKS.map(({ to, label, end }) => (
+              {LINKS.map(({ to, key, end }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -69,10 +72,14 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
                     isActive ? `${styles.link} ${styles.active}` : styles.link
                   }
                 >
-                  {label}
+                  {t.nav[key]}
                 </NavLink>
               ))}
             </nav>
+            <div className={styles.lang}>
+              <span>{t.common.language}</span>
+              <LanguageToggle />
+            </div>
             {install.mode === 'prompt' && (
               <button
                 type="button"
@@ -80,12 +87,12 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
                 onClick={() => void install.install()}
               >
                 <Icon name="download" size={20} />
-                Install app
+                {t.nav.install}
               </button>
             )}
             {install.mode === 'ios' && (
               <p className={styles.iosHint}>
-                Install: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
+                {t.nav.iosInstall(t.nav.iosShare, t.nav.iosAdd)}
               </p>
             )}
             <button
@@ -96,7 +103,7 @@ export function NavDrawerProvider({ children }: { children: ReactNode }) {
                 void signOut();
               }}
             >
-              Sign out
+              {t.nav.signOut}
             </button>
           </aside>
         </div>

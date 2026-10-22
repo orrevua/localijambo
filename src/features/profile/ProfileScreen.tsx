@@ -5,11 +5,13 @@ import { buildTreeStats } from '../../lib/treeStats.ts';
 import type { TreeStatsVM } from '../../lib/treeStats.ts';
 import StateMessage from '../../components/StateMessage.tsx';
 import { useAddTreeModal } from '../add-tree/useAddTreeModal.ts';
+import { useI18n } from '../../i18n/useI18n.ts';
 import styles from './ProfileScreen.module.css';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
   const { open } = useAddTreeModal();
+  const { t } = useI18n();
   const [vm, setVm] = useState<TreeStatsVM | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,46 +24,46 @@ export default function ProfileScreen() {
         if (active) setVm(buildTreeStats(trees, new Date()));
       })
       .catch((err) => {
-        if (active) setError(err instanceof Error ? err.message : 'Could not load your trees.');
+        if (active) setError(err instanceof Error ? err.message : String(err));
       });
     return () => {
       active = false;
     };
   }, [userId]);
 
-  if (!user) return <StateMessage title="Not signed in" />;
-  if (error) return <StateMessage tone="error" title="Could not load profile" detail={error} />;
-  if (!vm) return <StateMessage title="Loading profile…" />;
+  if (!user) return <StateMessage title={t.profile.notSignedIn} />;
+  if (error) return <StateMessage tone="error" title={t.profile.loadError} detail={error} />;
+  if (!vm) return <StateMessage title={t.profile.loading} />;
 
   return (
     <div className={styles.screen}>
       <header className={styles.identity}>
-        <h2 className={styles.title}>Profile</h2>
+        <h2 className={styles.title}>{t.profile.title}</h2>
         <p className={styles.email}>{user.email}</p>
       </header>
 
       {vm.total === 0 ? (
-        <StateMessage title="No trees yet" detail="Add your first jambo tree to see your stats here.">
+        <StateMessage title={t.profile.empty} detail={t.profile.emptyDetail}>
           <button type="button" className="btn" onClick={() => open()}>
-            Add a tree
+            {t.nav.add}
           </button>
         </StateMessage>
       ) : (
         <>
           <div className={styles.cards}>
-            <Stat label="Trees added" value={vm.total} big />
-            <Stat label="In season now" value={vm.inSeasonNowCount} />
-            <Stat label="Ready to pick" value={vm.readyNowCount} />
-            <Stat label="Shared" value={vm.sharedCount} />
-            <Stat label="Private" value={vm.privateCount} />
+            <Stat label={t.profile.added} value={vm.total} big />
+            <Stat label={t.profile.inSeason} value={vm.inSeasonNowCount} />
+            <Stat label={t.profile.ready} value={vm.readyNowCount} />
+            <Stat label={t.profile.shared} value={vm.sharedCount} />
+            <Stat label={t.profile.private} value={vm.privateCount} />
           </div>
 
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>By fruiting status</h3>
+            <h3 className={styles.groupTitle}>{t.profile.byFruiting}</h3>
             <dl className={styles.rows}>
               {Object.entries(vm.byFruitingStatus).map(([k, n]) => (
                 <div className={styles.row} key={k}>
-                  <dt>{k}</dt>
+                  <dt>{t.profile.fruitingValue[k] ?? k}</dt>
                   <dd>{n}</dd>
                 </div>
               ))}
@@ -69,11 +71,11 @@ export default function ProfileScreen() {
           </section>
 
           <section className={styles.group}>
-            <h3 className={styles.groupTitle}>By ripeness</h3>
+            <h3 className={styles.groupTitle}>{t.profile.byRipeness}</h3>
             <dl className={styles.rows}>
               {Object.entries(vm.byRipeness).map(([k, n]) => (
                 <div className={styles.row} key={k}>
-                  <dt>{k}</dt>
+                  <dt>{t.profile.ripenessValue[k] ?? k}</dt>
                   <dd>{n}</dd>
                 </div>
               ))}

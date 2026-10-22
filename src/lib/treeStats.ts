@@ -15,7 +15,7 @@ export interface TreeStatEntry {
   tree: Tree;
   prediction: FruitingPrediction;
   daysToRipe: number; // = prediction.daysToRipeMin (sort key)
-  inSeasonNow: boolean;
+  inSeasonNow: boolean; // calendar harvest window, or ripe fruit observed on the tree
   readyNow: boolean; // stage 'harvest' || 'overripe' (fruit available)
   lastObservedDays: number | null; // whole days since updatedAt; null if unparsable
   stale: boolean;
@@ -110,7 +110,7 @@ export function buildTreeStats(trees: Tree[], now: Date): TreeStatsVM {
       tree,
       prediction,
       daysToRipe: prediction.daysToRipeMin,
-      inSeasonNow: prediction.inSeason,
+      inSeasonNow: prediction.inSeason || readyNow,
       readyNow,
       lastObservedDays,
       stale: lastObservedDays === null || lastObservedDays > STALE_THRESHOLD_DAYS,

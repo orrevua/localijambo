@@ -1,8 +1,10 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import StateMessage from './StateMessage.tsx';
+import { useI18n } from '../i18n/useI18n.ts';
 
 export default function RouteError() {
   const error = useRouteError();
+  const { t } = useI18n();
 
   if (isRouteErrorResponse(error)) {
     const notFound = error.status === 404;
@@ -10,27 +12,27 @@ export default function RouteError() {
       <div className="route-error">
         <StateMessage
           tone={notFound ? 'neutral' : 'error'}
-          title={notFound ? 'Page not found' : `Something went wrong (${error.status})`}
+          title={notFound ? t.common.notFound : t.common.somethingWrongStatus(error.status)}
           detail={
             notFound
-              ? "That page doesn't exist. It may have moved or the link was mistyped."
-              : error.statusText || 'An unexpected error occurred.'
+              ? t.common.notFoundDetail
+              : error.statusText || t.common.unexpected
           }
-          action={{ to: '/', label: 'Back to the map' }}
+          action={{ to: '/', label: t.common.backToMap }}
         />
       </div>
     );
   }
 
   const message =
-    error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+    error instanceof Error ? error.message : t.common.unexpected;
   return (
     <div className="route-error">
       <StateMessage
         tone="error"
-        title="Something went wrong"
+        title={t.common.somethingWrong}
         detail={message}
-        action={{ to: '/', label: 'Back to the map' }}
+        action={{ to: '/', label: t.common.backToMap }}
       />
     </div>
   );

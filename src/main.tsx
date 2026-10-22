@@ -9,7 +9,8 @@ import ProfileScreen from './features/profile/ProfileScreen.tsx';
 import DashboardScreen from './features/dashboard/DashboardScreen.tsx';
 import LoginScreen from './features/auth/LoginScreen.tsx';
 import RouteError from './components/RouteError.tsx';
-import StateMessage from './components/StateMessage.tsx';
+import NotFound from './components/NotFound.tsx';
+import { I18nProvider } from './i18n/I18nProvider.tsx';
 import { AuthProvider } from './auth/AuthProvider.tsx';
 import { SyncProvider } from './sync/SyncProvider.tsx';
 import { RequireAnon, RequireAuth } from './auth/RequireAuth.tsx';
@@ -43,34 +44,24 @@ const router = createBrowserRouter([
       { path: 'dashboard', element: <DashboardScreen /> },
       {
         path: '*',
-        element: (
-          <StateMessage
-            title="Page not found"
-            detail="That page doesn't exist. It may have moved or the link was mistyped."
-            action={{ to: '/', label: 'Back to the map' }}
-          />
-        ),
+        element: <NotFound />,
       },
     ],
   },
   {
     path: '*',
-    element: (
-      <StateMessage
-        title="Page not found"
-        detail="That page doesn't exist. It may have moved or the link was mistyped."
-        action={{ to: '/', label: 'Back to the map' }}
-      />
-    ),
+    element: <NotFound />,
   },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <I18nProvider>
     <AuthProvider>
       <SyncProvider>
         <RouterProvider router={router} />
       </SyncProvider>
     </AuthProvider>
+    </I18nProvider>
   </StrictMode>,
 );

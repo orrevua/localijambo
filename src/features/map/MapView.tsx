@@ -13,6 +13,7 @@ import { useTreeDetailModal } from '../tree-detail/useTreeDetailModal.ts';
 import { distanceMeters, formatDistance, jamboTone, treeName } from '../../lib/jamboStatus.ts';
 import type { JamboTone } from '../../lib/jamboStatus.ts';
 import Icon from '../../components/Icon.tsx';
+import { useI18n } from '../../i18n/useI18n.ts';
 import StatusChip from '../../components/StatusChip.tsx';
 import type { Tree } from '../../types/tree.ts';
 import styles from './MapView.module.css';
@@ -20,13 +21,7 @@ import styles from './MapView.module.css';
 type Status = 'loading' | 'ready' | 'error';
 type Filter = 'all' | JamboTone;
 
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'ripe', label: 'Ripe' },
-  { value: 'fruiting', label: 'Fruiting' },
-  { value: 'flowering', label: 'Flowering' },
-  { value: 'resting', label: 'Resting' },
-];
+const FILTERS: Filter[] = ['all', 'ripe', 'fruiting', 'flowering', 'resting'];
 
 const FOCUS_ZOOM = 17;
 
@@ -40,6 +35,7 @@ export default function MapView() {
   const { open, placing, cancelPlacing } = useAddTreeModal();
   const { open: openDetail } = useTreeDetailModal();
   const location = useLocation();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [trees, setTrees] = useState<Tree[]>([]);
   const [status, setStatus] = useState<Status>('loading');
@@ -168,14 +164,14 @@ export default function MapView() {
       {locating && (
         <div className={styles.loading}>
           <span className={styles.spinner} aria-hidden="true" />
-          <p>Finding your location…</p>
+          <p>{t.map.finding}</p>
         </div>
       )}
 
       {placing ? (
         <>
           <div className={styles.placeBanner} role="status">
-            Move the map to put the pin on the tree
+            {t.map.placeHint}
           </div>
           <div
             className={styles.crosshair}
@@ -184,35 +180,35 @@ export default function MapView() {
           />
           <div className={styles.placeBar}>
             <button type="button" className="btn btn-ghost" onClick={cancelPlacing}>
-              Cancel
+              {t.map.cancel}
             </button>
             <button
               type="button"
               className={styles.fabSmall}
               onClick={locateMe}
               disabled={locatingMe}
-              aria-label="Move to my location"
+              aria-label={t.map.locate}
             >
               <Icon name="locate" />
             </button>
             <button type="button" className="btn" onClick={confirmPlacement} disabled={!map}>
-              <Icon name="check" size={20} /> Place here
+              <Icon name="check" size={20} /> {t.map.placeHere}
             </button>
           </div>
         </>
       ) : (
         <>
-          <div className={styles.filters} role="radiogroup" aria-label="Filter jambos">
+          <div className={styles.filters} role="radiogroup" aria-label={t.map.filterLabel}>
             {FILTERS.map((f) => (
               <button
-                key={f.value}
+                key={f}
                 type="button"
                 role="radio"
-                aria-checked={filter === f.value}
-                className={`${styles.filter} ${filter === f.value ? styles.filterOn : ''}`}
-                onClick={() => setFilter(f.value)}
+                aria-checked={filter === f}
+                className={`${styles.filter} ${filter === f ? styles.filterOn : ''}`}
+                onClick={() => setFilter(f)}
               >
-                {f.label}
+                {f === 'all' ? t.map.all : t.tone[f]}
               </button>
             ))}
           </div>
@@ -223,7 +219,7 @@ export default function MapView() {
               className={styles.fabSmall}
               onClick={locateMe}
               disabled={locatingMe}
-              aria-label="Move to my location"
+              aria-label={t.map.locate}
             >
               <Icon name="locate" />
             </button>
@@ -239,14 +235,14 @@ export default function MapView() {
               <span className={styles.grabber} aria-hidden="true" />
               <span className={styles.sheetTitle}>
                 {status === 'loading'
-                  ? 'Loading jambos…'
+                  ? t.map.loading
                   : status === 'error'
-                    ? 'Could not load jambos'
+                    ? t.map.error
                     : visible.length === 0
                       ? filter === 'all'
-                        ? 'No jambos yet — tap + to add one'
-                        : 'No jambos match this filter'
-                      : `${visible.length} jambo${visible.length === 1 ? '' : 's'} on the map`}
+                        ? t.map.empty
+                        : t.map.noMatch
+                      : t.map.count(visible.length)}
               </span>
               <Icon name={sheetOpen ? 'chevronDown' : 'chevronUp'} size={20} />
             </button>
@@ -272,7 +268,7 @@ export default function MapView() {
                         <span className={styles.rowName}>{treeName(tree)}</span>
                         {center && (
                           <span className={styles.rowMeta}>
-                            {formatDistance(distanceMeters(center, tree))} away
+                            {t.map.away(formatDistance(distanceMeters(center, tree)))}
                           </span>
                         )}
                       </span>

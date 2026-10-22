@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '../../auth/useAuth.ts';
+import { useI18n } from '../../i18n/useI18n.ts';
+import LanguageToggle from '../../components/LanguageToggle.tsx';
 import styles from './LoginScreen.module.css';
 
 type Mode = 'signin' | 'signup';
 
 export default function LoginScreen() {
   const { signInWithPassword, signUp } = useAuth();
+  const { t } = useI18n();
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,13 +29,13 @@ export default function LoginScreen() {
       } else {
         const { needsConfirmation } = await signUp(email.trim(), password);
         if (needsConfirmation) {
-          setInfo('Account created. Check your inbox to confirm your email, then sign in.');
+          setInfo(t.login.created);
           setMode('signin');
           setPassword('');
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setError(err instanceof Error ? err.message : t.login.error);
     } finally {
       setBusy(false);
     }
@@ -46,12 +49,15 @@ export default function LoginScreen() {
 
   return (
     <div className={styles.screen}>
+      <div className={styles.lang}>
+        <LanguageToggle />
+      </div>
       <img className={styles.logo} src="/logo.svg" alt="" width={72} height={72} />
       <h1 className={styles.title}>localijambo</h1>
       <p className={styles.subtitle}>
         {mode === 'signin'
-          ? 'Find the jambo trees around you. Sign in to continue.'
-          : 'Create an account to start mapping jambos.'}
+          ? t.login.signInSubtitle
+          : t.login.signUpSubtitle}
       </p>
 
       <form className={styles.form} onSubmit={onSubmit}>
@@ -60,7 +66,7 @@ export default function LoginScreen() {
           type="email"
           required
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={t.login.email}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={busy}
@@ -71,7 +77,7 @@ export default function LoginScreen() {
           required
           minLength={6}
           autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-          placeholder="Password"
+          placeholder={t.login.password}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={busy}
@@ -83,11 +89,11 @@ export default function LoginScreen() {
         >
           {busy
             ? mode === 'signin'
-              ? 'Signing in…'
-              : 'Creating account…'
+              ? t.login.signingIn
+              : t.login.creating
             : mode === 'signin'
-              ? 'Sign in'
-              : 'Create account'}
+              ? t.login.signIn
+              : t.login.createAccount}
         </button>
         {error && <p className={styles.error}>{error}</p>}
         {info && <p className={styles.sent}>{info}</p>}
@@ -96,16 +102,16 @@ export default function LoginScreen() {
       <p className={styles.switch}>
         {mode === 'signin' ? (
           <>
-            No account?{' '}
+            {t.login.noAccount}{' '}
             <button type="button" className={styles.link} onClick={() => switchMode('signup')}>
-              Create one
+              {t.login.createOne}
             </button>
           </>
         ) : (
           <>
-            Already have an account?{' '}
+            {t.login.haveAccount}{' '}
             <button type="button" className={styles.link} onClick={() => switchMode('signin')}>
-              Sign in
+              {t.login.signIn}
             </button>
           </>
         )}

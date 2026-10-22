@@ -1,13 +1,15 @@
 import { useSync } from '../sync/useSync.ts';
+import { useI18n } from '../i18n/useI18n.ts';
 import styles from './SyncStatusBadge.module.css';
 
 export default function SyncStatusBadge() {
   const { pending, syncing, lastError, forceSync } = useSync();
+  const { t } = useI18n();
 
   if (pending === 0 && !syncing) return null;
 
-  const label = syncing ? 'Syncing…' : `${pending} pending · Sync now`;
-  const title = lastError ?? `${pending} change(s) waiting to sync — tap to sync now`;
+  const label = syncing ? t.sync.syncing : t.sync.pending(pending);
+  const title = lastError ?? t.sync.pendingTitle(pending);
 
   return (
     <button

@@ -5,11 +5,13 @@ import Sheet from '../../components/Sheet.tsx';
 import TreeForm from './TreeForm.tsx';
 import { AddTreeModalContext } from './AddTreeModalContext.ts';
 import type { AddTreeCoords, AddTreeModalValue } from './AddTreeModalContext.ts';
+import { useI18n } from '../../i18n/useI18n.ts';
 import styles from './AddTreeSheet.module.css';
 
 export function AddTreeModalProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useI18n();
   const [coords, setCoords] = useState<AddTreeCoords | null>(null);
   const [placing, setPlacing] = useState(false);
 
@@ -45,10 +47,10 @@ export function AddTreeModalProvider({ children }: { children: ReactNode }) {
     <AddTreeModalContext value={value}>
       {children}
       {coords && (
-        <Sheet label="Add a jambo" onClose={close}>
+        <Sheet label={t.form.sheetLabel} onClose={close}>
           <div className={styles.screen}>
             <header className={styles.head}>
-              <h2 className={styles.title}>New jambo</h2>
+              <h2 className={styles.title}>{t.form.title}</h2>
               <p className={styles.coords}>
                 {coords.lat.toFixed(5)}, {coords.lon.toFixed(5)}
               </p>
